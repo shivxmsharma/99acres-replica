@@ -47,9 +47,9 @@ export default function Navbar() {
 
           {/* Right Side Actions */}
           <div className="flex items-center gap-4">
-            <button className="hidden md:flex items-center gap-2 bg-white text-primary px-4 py-1.5 rounded-full text-xs font-bold hover:bg-blue-50 transition-all shadow-lg">
+            <Link href="/post-property" className="hidden md:flex items-center gap-2 bg-white text-primary px-4 py-1.5 rounded-full text-xs font-bold hover:bg-blue-50 transition-all shadow-lg">
               <Plus size={14} /> Post Property <span className="bg-secondary text-white text-[8px] px-1 rounded ml-1 uppercase">FREE</span>
-            </button>
+            </Link>
             
             <div className="flex items-center gap-3">
               <button className="p-2 hover:bg-blue-700 rounded-full transition-colors relative">
@@ -83,9 +83,9 @@ export default function Navbar() {
               </div>
             </div>
           ))}
-          <button className="w-full mt-4 bg-secondary text-white font-bold py-2 rounded-lg flex items-center justify-center gap-2 shadow-lg">
+          <Link href="/post-property" className="w-full mt-4 bg-secondary text-white font-bold py-2 rounded-lg flex items-center justify-center gap-2 shadow-lg">
             <Plus size={18} /> Post Property
-          </button>
+          </Link>
         </div>
       )}
     </nav>
