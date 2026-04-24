@@ -1,26 +1,59 @@
 @import "tailwindcss";
 
+@theme {
+  --color-primary: #0041C2;
+  --color-secondary: #36AE7C;
+  --color-accent: #FFD700;
+  --color-background: #FFFFFF;
+  --color-foreground: #0F172A;
+  
+  --font-sans: "Inter", "Roboto", "Helvetica Neue", sans-serif;
+}
+
 :root {
   --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --foreground: #0f172a;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── 99acres Style Utilities ── */
+
+.btn-primary {
+  @apply bg-primary text-white font-bold py-2 px-6 rounded-lg transition-all hover:bg-[#0035A3];
+}
+
+.btn-secondary {
+  @apply bg-secondary text-white font-bold py-2 px-6 rounded-lg transition-all hover:bg-[#2D8E65];
+}
+
+.card-shadow {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.section-padding {
+  @apply py-12 px-4 md:px-8 lg:px-16;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #0041C2;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #0035A3;
 }
