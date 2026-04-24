@@ -1,8 +1,9 @@
-import Image from "next/image";
+import Link from "next/link";
 import { MapPin, Home, Maximize2, ShieldCheck } from "lucide-react";
 
 export default function PropertyCard({ property }) {
   const {
+    _id,
     title,
     price,
     priceLabel,
@@ -14,7 +15,8 @@ export default function PropertyCard({ property }) {
   } = property;
 
   return (
-    <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-2xl transition-all duration-300 group cursor-pointer flex flex-col h-full">
+    <Link href={`/property/${_id}`} className="block h-full">
+      <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-2xl transition-all duration-300 group cursor-pointer flex flex-col h-full">
       {/* Image Section */}
       <div className="relative h-56 w-full overflow-hidden">
         <img
@@ -72,7 +74,8 @@ export default function PropertyCard({ property }) {
             Contact
           </button>
         </div>
+        </div>
       </div>
-    </div>
+    </Link>
   );
 }
