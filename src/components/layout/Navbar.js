@@ -56,9 +56,23 @@ export default function Navbar() {
                 <Bell size={20} />
                 <span className="absolute top-1 right-1 w-2 h-2 bg-secondary rounded-full border-2 border-primary"></span>
               </button>
-              <button className="p-2 hover:bg-blue-700 rounded-full transition-colors">
-                <User size={20} />
-              </button>
+              <div className="relative group">
+                <button className="p-2 hover:bg-blue-700 rounded-full transition-colors">
+                  <User size={20} />
+                </button>
+                <div className="absolute top-full right-0 w-48 bg-white text-gray-800 shadow-xl rounded-b-lg hidden group-hover:block border-t-2 border-primary py-2 overflow-hidden">
+                  <Link href="/dashboard" className="block px-4 py-2 text-sm hover:bg-blue-50 font-black transition-colors">
+                    Dashboard
+                  </Link>
+                  <Link href="/post-property" className="block px-4 py-2 text-sm hover:bg-blue-50 font-black transition-colors">
+                    Post Property
+                  </Link>
+                  <hr className="my-2 border-gray-100" />
+                  <button className="w-full text-left px-4 py-2 text-sm hover:bg-red-50 text-red-500 font-black transition-colors">
+                    Logout
+                  </button>
+                </div>
+              </div>
               <button 
                 className="lg:hidden p-2 hover:bg-blue-700 rounded-full transition-colors"
                 onClick={() => setIsOpen(!isOpen)}
