@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import Property from "@/models/Property";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export async function GET(request) {
   try {
@@ -60,9 +62,27 @@ export async function GET(request) {
 
 export async function POST(request) {
   try {
+    const session = await getServerSession(authOptions);
+    
+    if (!session) {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    }
+
     await dbConnect();
     const body = await request.json();
-    const property = await Property.create(body);
+    
+    // Attach current user as owner
+    const propertyData = {
+      ...body,
+      owner: {
+        name: session.user.name,
+        email: session.user.email,
+        phone: "+91 XXXXX XXXXX", // Should be from user profile if we had it
+        role: session.user.role || "Owner"
+      }
+    };
+
+    const property = await Property.create(propertyData);
     return NextResponse.json({ success: true, data: property }, { status: 201 });
   } catch (error) {
     return NextResponse.json({ success: false, error: error.message }, { status: 400 });

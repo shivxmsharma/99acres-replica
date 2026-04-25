@@ -10,7 +10,8 @@ import {
   Upload, 
   Home, 
   Coins, 
-  ShieldCheck 
+  ShieldCheck,
+  ChevronDown
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
@@ -177,13 +178,16 @@ export default function PostPropertyPage() {
 
                       <div className="space-y-3">
                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Property Type</label>
-                        <select 
-                          className="w-full py-3.5 px-4 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:border-primary font-bold text-gray-900"
-                          value={formData.type}
-                          onChange={(e) => setFormData({...formData, type: e.target.value})}
-                        >
-                          {PROPERTY_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
-                        </select>
+                        <div className="relative group">
+                          <select 
+                            className="w-full py-3.5 px-4 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:border-primary font-bold text-gray-900 appearance-none cursor-pointer pr-12"
+                            value={formData.type}
+                            onChange={(e) => setFormData({...formData, type: e.target.value})}
+                          >
+                            {PROPERTY_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
+                          </select>
+                          <ChevronDown className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary pointer-events-none transition-colors" size={18} />
+                        </div>
                       </div>
 
                       <div className="md:col-span-2 space-y-3">
@@ -298,13 +302,16 @@ export default function PostPropertyPage() {
 
                       <div className="space-y-3">
                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Furnishing</label>
-                        <select 
-                          className="w-full py-3.5 px-4 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:border-primary font-bold text-gray-900"
-                          value={formData.features.furnishing}
-                          onChange={(e) => setFormData({...formData, features: {...formData.features, furnishing: e.target.value}})}
-                        >
-                          {FURNISHING.map(f => <option key={f} value={f}>{f}</option>)}
-                        </select>
+                        <div className="relative group">
+                          <select 
+                            className="w-full py-3.5 px-4 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:border-primary font-bold text-gray-900 appearance-none cursor-pointer pr-12"
+                            value={formData.features.furnishing}
+                            onChange={(e) => setFormData({...formData, features: {...formData.features, furnishing: e.target.value}})}
+                          >
+                            {FURNISHING.map(f => <option key={f} value={f}>{f}</option>)}
+                          </select>
+                          <ChevronDown className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary pointer-events-none transition-colors" size={18} />
+                        </div>
                       </div>
                     </div>
                   </div>

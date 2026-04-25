@@ -1,8 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
+import Link from "next/link";
 import { Search, Menu, User, Bell, ChevronDown, Plus } from "lucide-react";
+import { useSession, signIn, signOut } from "next-auth/react";
 
 const NAV_LINKS = [
   { name: "For Buyers", links: ["Residential", "Commercial", "New Projects"] },
@@ -13,6 +14,7 @@ const NAV_LINKS = [
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const { data: session, status } = useSession();
 
   return (
     <nav className="bg-primary text-white sticky top-0 z-50 shadow-md">
@@ -57,21 +59,45 @@ export default function Navbar() {
                 <span className="absolute top-1 right-1 w-2 h-2 bg-secondary rounded-full border-2 border-primary"></span>
               </button>
               <div className="relative group">
-                <button className="p-2 hover:bg-blue-700 rounded-full transition-colors">
-                  <User size={20} />
-                </button>
-                <div className="absolute top-full right-0 w-48 bg-white text-gray-800 shadow-xl rounded-b-lg hidden group-hover:block border-t-2 border-primary py-2 overflow-hidden">
-                  <Link href="/dashboard" className="block px-4 py-2 text-sm hover:bg-blue-50 font-black transition-colors">
-                    Dashboard
+                {status === "authenticated" ? (
+                  <>
+                    <button className="p-1 hover:bg-blue-700 rounded-full transition-all flex items-center gap-2">
+                      {session.user.image ? (
+                        <img src={session.user.image} className="w-8 h-8 rounded-full border-2 border-white/20 shadow-sm" alt="" />
+                      ) : (
+                        <div className="w-8 h-8 bg-blue-700 rounded-full flex items-center justify-center">
+                          <User size={18} />
+                        </div>
+                      )}
+                    </button>
+                    <div className="absolute top-full right-0 w-56 bg-white text-gray-800 shadow-2xl rounded-2xl hidden group-hover:block border border-gray-100 py-3 overflow-hidden mt-1 transform origin-top-right transition-all">
+                      <div className="px-4 py-2 mb-2 border-b border-gray-50">
+                        <p className="text-[8px] font-black text-primary uppercase tracking-widest">{session.user.role || 'Buyer'}</p>
+                        <p className="text-sm font-black text-gray-900 truncate leading-tight">{session.user.name}</p>
+                      </div>
+                      <Link href="/dashboard" className="block px-4 py-2.5 text-xs font-bold text-gray-600 hover:text-primary hover:bg-blue-50 transition-all">
+                        Dashboard
+                      </Link>
+                      <Link href="/post-property" className="block px-4 py-2.5 text-xs font-bold text-gray-600 hover:text-primary hover:bg-blue-50 transition-all">
+                        Post Property
+                      </Link>
+                      <hr className="my-2 border-gray-50" />
+                      <button 
+                        onClick={() => signOut()}
+                        className="w-full text-left px-4 py-2.5 text-xs font-bold hover:bg-red-50 text-red-500 transition-all"
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <Link 
+                    href="/login"
+                    className="flex items-center gap-2 bg-blue-700 hover:bg-blue-600 px-5 py-2 rounded-full text-xs font-black transition-all border border-white/10"
+                  >
+                    Login
                   </Link>
-                  <Link href="/post-property" className="block px-4 py-2 text-sm hover:bg-blue-50 font-black transition-colors">
-                    Post Property
-                  </Link>
-                  <hr className="my-2 border-gray-100" />
-                  <button className="w-full text-left px-4 py-2 text-sm hover:bg-red-50 text-red-500 font-black transition-colors">
-                    Logout
-                  </button>
-                </div>
+                )}
               </div>
               <button 
                 className="lg:hidden p-2 hover:bg-blue-700 rounded-full transition-colors"

@@ -19,10 +19,12 @@ import {
   ChevronRight,
   X,
   Send,
-  Loader2
+  Loader2,
+  ChevronDown
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import { useSession, signOut } from "next-auth/react";
 
 const TABS = [
   { id: "overview", label: "Overview", icon: LayoutDashboard },
@@ -32,6 +34,7 @@ const TABS = [
 ];
 
 export default function DashboardPage() {
+  const { data: session } = useSession();
   const [activeTab, setActiveTab] = useState("overview");
   const [listings, setListings] = useState([]);
   const [leads, setLeads] = useState([]);
@@ -57,7 +60,9 @@ export default function DashboardPage() {
       const propsData = await propsRes.json();
       const leadsData = await leadsRes.json();
       
-      if (propsData.success) setListings(propsData.data.filter(p => p.owner?.name === "Demo Owner"));
+      if (propsData.success) {
+        setListings(propsData.data.filter(p => p.owner?.email === session?.user?.email));
+      }
       if (leadsData.success) setLeads(leadsData.data);
     } catch (error) {
       console.error("Failed to fetch dashboard data:", error);
@@ -95,11 +100,11 @@ export default function DashboardPage() {
         <div className="p-8">
           <div className="flex items-center gap-4 mb-10 p-4 bg-gray-50 rounded-3xl border border-gray-100">
             <div className="w-12 h-12 bg-primary rounded-2xl flex items-center justify-center text-white font-black text-xl shadow-lg shadow-primary/20">
-              D
+              {session?.user?.name ? session.user.name[0].toUpperCase() : 'D'}
             </div>
             <div>
-              <h4 className="font-black text-gray-900 leading-tight">Demo Owner</h4>
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Premium Seller</p>
+              <h4 className="font-black text-gray-900 leading-tight truncate w-32">{session?.user?.name || 'User'}</h4>
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{session?.user?.role || 'Owner'}</p>
             </div>
           </div>
 
@@ -141,7 +146,10 @@ export default function DashboardPage() {
           >
             <Settings size={20} /> Settings
           </button>
-          <button className="w-full flex items-center gap-4 px-6 py-3 rounded-2xl font-black text-sm text-gray-400 hover:text-red-500 transition-colors">
+          <button 
+            onClick={() => signOut()}
+            className="w-full flex items-center gap-4 px-6 py-3 rounded-2xl font-black text-sm text-gray-400 hover:text-red-500 transition-colors"
+          >
             <LogOut size={20} /> Logout
           </button>
         </div>
@@ -365,12 +373,15 @@ export default function DashboardPage() {
                       </div>
                       <div className="space-y-3">
                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Account Type</label>
-                        <select className="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:border-primary font-bold text-gray-900 transition-all">
-                          <option>Owner</option>
-                          <option>Buyer</option>
-                          <option>Agent</option>
-                          <option>Builder</option>
-                        </select>
+                        <div className="relative group">
+                          <select className="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:border-primary font-bold text-gray-900 transition-all appearance-none cursor-pointer pr-12">
+                            <option>Owner</option>
+                            <option>Buyer</option>
+                            <option>Agent</option>
+                            <option>Builder</option>
+                          </select>
+                          <ChevronDown className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary pointer-events-none transition-colors" size={18} />
+                        </div>
                       </div>
                     </div>
                     <button className="mt-10 bg-primary text-white font-black px-10 py-4 rounded-2xl text-xs uppercase tracking-widest shadow-xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all">
