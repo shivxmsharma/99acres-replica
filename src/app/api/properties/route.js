@@ -33,7 +33,13 @@ export async function GET(request) {
     
     if (status && status !== "All") query.status = status;
     if (city && !q) query["location.city"] = new RegExp(city, "i");
-    if (type) query.type = type;
+    
+    // Multi-select Type
+    if (type) {
+      const types = type.split(",");
+      query.type = { $in: types };
+    }
+
     if (isFeatured === "true") query.isFeatured = true;
 
     // Price Filtering
@@ -43,13 +49,42 @@ export async function GET(request) {
       if (maxPrice) query.price.$lte = Number(maxPrice);
     }
 
-    // BHK Filtering
+    // Advanced BHK Filtering (Support multi-select like 1,2,3)
     if (bhk) {
-      if (bhk.includes("+")) {
-        query["features.bhk"] = { $gte: parseInt(bhk) };
-      } else {
-        query["features.bhk"] = parseInt(bhk);
+      const bhkList = bhk.split(",").map(val => {
+        if (val.includes("+")) return { $gte: parseInt(val) };
+        return parseInt(val);
+      });
+      
+      const exactMatch = bhkList.filter(v => typeof v === 'number');
+      const rangeMatch = bhkList.find(v => typeof v === 'object');
+      
+      if (exactMatch.length > 0 && rangeMatch) {
+        query.$or = [
+          { "features.bhk": { $in: exactMatch } },
+          { "features.bhk": rangeMatch }
+        ];
+      } else if (exactMatch.length > 0) {
+        query["features.bhk"] = { $in: exactMatch };
+      } else if (rangeMatch) {
+        query["features.bhk"] = rangeMatch;
       }
+    }
+
+    // New Filters
+    const constructionStatus = searchParams.get("constructionStatus");
+    if (constructionStatus) {
+      query.constructionStatus = { $in: constructionStatus.split(",") };
+    }
+
+    const furnishing = searchParams.get("furnishing");
+    if (furnishing) {
+      query["features.furnishing"] = { $in: furnishing.split(",") };
+    }
+
+    const ownerRole = searchParams.get("ownerRole");
+    if (ownerRole) {
+      query["owner.role"] = { $in: ownerRole.split(",") };
     }
 
     const properties = await Property.find(query).sort({ createdAt: -1 });

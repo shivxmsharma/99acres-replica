@@ -47,8 +47,14 @@ const PropertySchema = new mongoose.Schema(
     images: [String],
     owner: {
       name: String,
-      type: { type: String, enum: ["Owner", "Dealer", "Builder"] },
-      contact: String,
+      email: String,
+      phone: String,
+      role: { type: String, enum: ["Owner", "Agent", "Builder", "Buyer"] },
+    },
+    constructionStatus: {
+      type: String,
+      enum: ["Ready to Move", "Under Construction"],
+      default: "Ready to Move"
     },
     isFeatured: {
       type: Boolean,

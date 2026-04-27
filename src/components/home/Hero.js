@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Search, MapPin, Mic, ChevronDown } from "lucide-react";
+import { Search, MapPin, Mic, ChevronDown, Clock } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const TABS = [
@@ -31,21 +31,74 @@ export default function Hero() {
   const [selectedType, setSelectedType] = useState("All Residential");
   const [isTypeOpen, setIsTypeOpen] = useState(false);
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
+  
+  // Auto-suggest state
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [recentSearches, setRecentSearches] = useState([]);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setPlaceholderIndex((prev) => (prev + 1) % PLACEHOLDERS.length);
     }, 3000);
+    
+    // Load recent searches
+    const saved = localStorage.getItem("recentSearches");
+    if (saved) setRecentSearches(JSON.parse(saved));
+
     return () => clearInterval(interval);
   }, []);
 
-  const handleSearch = () => {
+  useEffect(() => {
+    const fetchSuggestions = async () => {
+      if (searchQuery.length < 2) {
+        setSuggestions([]);
+        return;
+      }
+      try {
+        const res = await fetch(`/api/locations/suggest?q=${searchQuery}`);
+        const data = await res.json();
+        if (data.success) setSuggestions(data.data);
+      } catch (error) {
+        console.error("Suggestion fetch failed", error);
+      }
+    };
+
+    const timeoutId = setTimeout(fetchSuggestions, 300);
+    return () => clearTimeout(timeoutId);
+  }, [searchQuery]);
+
+  const handleSearch = (query = searchQuery) => {
     const params = new URLSearchParams();
-    if (searchQuery) params.set("q", searchQuery);
-    if (activeTab === "Buy" || activeTab === "Rent") params.set("status", activeTab);
-    if (selectedType !== "All Residential") params.set("type", selectedType);
+    const cleanQuery = query.split(' (')[0];
+    
+    if (cleanQuery) {
+      params.set("q", cleanQuery);
+      const updated = [cleanQuery, ...recentSearches.filter(s => s !== cleanQuery)].slice(0, 5);
+      setRecentSearches(updated);
+      localStorage.setItem("recentSearches", JSON.stringify(updated));
+    }
+    
+    // Status & Type Mapping based on Active Tab
+    if (activeTab === "Buy" || activeTab === "Rent") {
+      params.set("status", activeTab);
+    } else if (activeTab === "commercial") {
+      params.set("type", "Commercial");
+    } else if (activeTab === "plots") {
+      params.set("type", "Plot");
+    } else if (activeTab === "new-launch") {
+      params.set("status", "Buy");
+      params.set("featured", "true");
+    } else if (activeTab === "projects") {
+      params.set("type", "Apartment");
+    }
+
+    if (selectedType !== "All Residential" && activeTab !== "commercial" && activeTab !== "plots") {
+      params.set("type", selectedType);
+    }
     
     router.push(`/search?${params.toString()}`);
+    setShowSuggestions(false);
   };
 
   return (
@@ -76,7 +129,13 @@ export default function Hero() {
             {TABS.map((tab) => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
+                onClick={() => {
+                  if (tab.id === "post") {
+                    router.push("/post-property");
+                    return;
+                  }
+                  setActiveTab(tab.id);
+                }}
                 className={`relative px-4 py-4 text-sm font-semibold transition-all whitespace-nowrap flex items-center gap-1.5 ${
                   activeTab === tab.id ? "text-primary" : "text-gray-500 hover:text-gray-800"
                 }`}
@@ -143,6 +202,8 @@ export default function Hero() {
               <input
                 type="text"
                 value={searchQuery}
+                onFocus={() => setShowSuggestions(true)}
+                onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                 className="w-full pl-12 pr-24 py-4 bg-transparent outline-none text-gray-800 text-base placeholder-gray-400 font-medium"
@@ -152,6 +213,47 @@ export default function Hero() {
                 <MapPin size={20} className="cursor-pointer hover:text-primary transition-colors" />
                 <Mic size={20} className="cursor-pointer hover:text-primary transition-colors" />
               </div>
+
+              {/* Suggestions Dropdown */}
+              <AnimatePresence>
+                {showSuggestions && (searchQuery.length > 0 || recentSearches.length > 0) && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-2xl z-[60] border border-gray-100 overflow-hidden"
+                  >
+                    {searchQuery.length === 0 && recentSearches.length > 0 && (
+                      <div className="p-4 bg-gray-50/50 border-b border-gray-100 flex items-center gap-2">
+                        <Clock className="text-gray-400" size={14} />
+                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Recent Searches</span>
+                      </div>
+                    )}
+                    
+                    {(searchQuery.length === 0 ? recentSearches : suggestions).map((item, idx) => (
+                      <div
+                        key={idx}
+                        onClick={() => {
+                          setSearchQuery(item.split(' (')[0]);
+                          handleSearch(item);
+                        }}
+                        className="px-6 py-4 flex items-center gap-4 hover:bg-primary/5 cursor-pointer transition-all border-b border-gray-50 last:border-0 group"
+                      >
+                        <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+                          {searchQuery.length === 0 ? <Clock size={16} /> : <MapPin size={16} />}
+                        </div>
+                        <span className="text-sm font-bold text-gray-700 group-hover:text-gray-900">{item}</span>
+                      </div>
+                    ))}
+
+                    {searchQuery.length > 0 && suggestions.length === 0 && (
+                      <div className="p-10 text-center">
+                        <p className="text-xs font-bold text-gray-400 italic">No exact locations found for "{searchQuery}"</p>
+                      </div>
+                    )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
             {/* Search Button */}

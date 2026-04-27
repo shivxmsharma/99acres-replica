@@ -6,10 +6,36 @@ import { Search, Menu, User, Bell, ChevronDown, Plus } from "lucide-react";
 import { useSession, signIn, signOut } from "next-auth/react";
 
 const NAV_LINKS = [
-  { name: "For Buyers", links: ["Residential", "Commercial", "New Projects"] },
-  { name: "For Tenants", links: ["Rent a House", "PG/Hostels", "Flatmates"] },
-  { name: "For Owners", links: ["Post Property", "Owner Services"] },
-  { name: "For Dealers", links: ["Post Property", "Agent Services"] },
+  { 
+    name: "For Buyers", 
+    links: [
+      { label: "Residential", href: "/search?type=Apartment" },
+      { label: "Commercial", href: "/search?type=Commercial" },
+      { label: "New Projects", href: "/search?type=Apartment&status=Buy" }
+    ] 
+  },
+  { 
+    name: "For Tenants", 
+    links: [
+      { label: "Rent a House", href: "/search?status=Rent" },
+      { label: "PG/Hostels", href: "/search?type=Apartment&status=Rent" },
+      { label: "Flatmates", href: "/search?status=Rent" }
+    ] 
+  },
+  { 
+    name: "For Owners", 
+    links: [
+      { label: "Post Property", href: "/post-property" },
+      { label: "Dashboard", href: "/dashboard" }
+    ] 
+  },
+  { 
+    name: "For Dealers", 
+    links: [
+      { label: "Post Property", href: "/post-property" },
+      { label: "Agent Services", href: "/dashboard" }
+    ] 
+  },
 ];
 
 export default function Navbar() {
@@ -37,8 +63,8 @@ export default function Navbar() {
                   </button>
                   <div className="absolute top-full left-0 w-48 bg-white text-gray-800 shadow-xl rounded-b-lg hidden group-hover:block border-t-2 border-primary">
                     {item.links.map((sub) => (
-                      <Link key={sub} href="#" className="block px-4 py-2 text-sm hover:bg-blue-50 transition-colors">
-                        {sub}
+                      <Link key={sub.label} href={sub.href} className="block px-4 py-2 text-sm hover:bg-blue-50 transition-colors">
+                        {sub.label}
                       </Link>
                     ))}
                   </div>
@@ -118,7 +144,7 @@ export default function Navbar() {
               <div className="font-bold text-blue-200 text-xs uppercase tracking-widest mb-1">{item.name}</div>
               <div className="grid grid-cols-2 gap-2">
                 {item.links.map((sub) => (
-                  <Link key={sub} href="#" className="text-sm py-1 hover:text-blue-300">{sub}</Link>
+                  <Link key={sub.label} href={sub.href} className="text-sm py-1 hover:text-blue-300">{sub.label}</Link>
                 ))}
               </div>
             </div>
