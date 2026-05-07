@@ -4,6 +4,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import AuthProvider from "@/components/providers/AuthProvider";
 import AiAssistant from "@/components/ai/AiAssistant";
+import NotificationListener from "@/components/common/NotificationListener";
 import { Toaster } from "react-hot-toast";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -24,6 +25,7 @@ export default function RootLayout({ children }) {
               {children}
             </main>
             <Footer />
+            <NotificationListener />
             <AiAssistant />
             <Toaster position="top-center" reverseOrder={false} />
           </div>

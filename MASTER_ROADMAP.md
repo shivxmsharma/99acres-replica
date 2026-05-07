@@ -35,10 +35,10 @@
 - [x] "AI Property Insights" on property detail pages.
 - [x] Dedicated AI advisory page.
 
-### Phase 3: Advanced Search & Discovery [UPCOMING]
-- [ ] Algolia Instant Search integration.
-- [ ] Map-view toggle for search results.
-- [ ] Real-time Enquiry notifications via Pusher.
+### Phase 3: Advanced Search & Discovery [COMPLETE]
+- [x] Algolia Instant Search integration.
+- [x] Map-view toggle for search results.
+- [x] Real-time Lead notifications via Pusher.
 
 ### Phase 4: Real Estate Tools & Trust [UPCOMING]
 - [ ] EMI, Stamp Duty, and Valuation Calculators.

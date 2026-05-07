@@ -25,6 +25,29 @@ export async function POST(request) {
     };
 
     const lead = await Lead.create(leadData);
+
+    // Real-time Notification via Pusher
+    try {
+      const property = await Property.findById(body.propertyId);
+      if (property && property.owner?.email) {
+        const { pusherServer } = await import("@/lib/pusher");
+        await pusherServer.trigger(
+          `user-${property.owner.email.replace(/[^a-zA-Z0-9]/g, "_")}`,
+          "new-lead",
+          {
+            message: `New enquiry for ${property.title}`,
+            lead: {
+              name: body.name,
+              mobile: body.mobile,
+              propertyTitle: property.title
+            }
+          }
+        );
+      }
+    } catch (pusherError) {
+      console.error("Pusher Trigger Error:", pusherError);
+    }
+
     return NextResponse.json({ success: true, data: lead }, { status: 201 });
   } catch (error) {
     return NextResponse.json({ success: false, error: error.message }, { status: 400 });
