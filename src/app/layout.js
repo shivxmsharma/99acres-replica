@@ -2,8 +2,9 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-
 import AuthProvider from "@/components/providers/AuthProvider";
+import AiAssistant from "@/components/ai/AiAssistant";
+import { Toaster } from "react-hot-toast";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,6 +24,8 @@ export default function RootLayout({ children }) {
               {children}
             </main>
             <Footer />
+            <AiAssistant />
+            <Toaster position="top-center" reverseOrder={false} />
           </div>
         </AuthProvider>
       </body>

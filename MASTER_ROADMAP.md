@@ -21,18 +21,36 @@
 - [x] **Phase 6: Advanced Search**: 1:1 copy of 99acres sidebar filters and backend logic.
 - [x] **Phase 7: Interactions**: Shortlist system (Heart icon) and Quick View overlays.
 
-## 4. Upcoming Feature Roadmap (Phase 8+)
+---
 
-### A. Lead Generation & Analytics
-- [x] **Enquiry Flow**: Lead capture modals and "Instant Callback" requests.
-- [ ] **Property Analytics**: Sticky contact bars (tracking), facilities grid, and neighborhood insights.
+## 5. NestIQ Feature Integration (Advanced Features)
 
-### B. Backend & CMS
-- [ ] **Property Management (CRUD)**: Edit and Delete listings from the dashboard.
-- [ ] **Post Property**: High-fidelity multi-step verification form for owners.
+### Phase 1: Infrastructure & Data Models [COMPLETE]
+- [x] Merged advanced User, Property, and Enquiry models.
+- [x] Integrated Algolia, Pusher, Razorpay, and Gemini SDKs.
+- [x] Set up Cloudinary for optimized media management.
+
+### Phase 2: AI Property Assistant [COMPLETE]
+- [x] Global "99Assistant" (Gemini-powered chat).
+- [x] "AI Property Insights" on property detail pages.
+- [x] Dedicated AI advisory page.
+
+### Phase 3: Advanced Search & Discovery [UPCOMING]
+- [ ] Algolia Instant Search integration.
+- [ ] Map-view toggle for search results.
+- [ ] Real-time Enquiry notifications via Pusher.
+
+### Phase 4: Real Estate Tools & Trust [UPCOMING]
+- [ ] EMI, Stamp Duty, and Valuation Calculators.
+- [ ] Property Trust Score & Verification badges.
+
+### Phase 5: Owner Dashboard & Professional Tools [UPCOMING]
+- [ ] Advanced dashboard for listing management.
+- [ ] Razorpay integration for Featured Listings (Monetization).
+- [ ] Professional review and rating system.
 
 ---
-**This roadmap ensures that every single feature from 99acres.com is mapped and implemented.**
+**This roadmap ensures that every single feature from 99acres.com is mapped and implemented, enhanced by NestIQ's intelligence.**
 **Last Updated**: 2026-04-27
 **Project Status**: Advanced Interactions Complete | Moving to Dashboard CRUD & Analytics
 

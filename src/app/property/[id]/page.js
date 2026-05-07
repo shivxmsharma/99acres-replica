@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 
 import ContactActions from "@/components/property/ContactActions";
+import PropertyAiInsights from "@/components/ai/PropertyAiInsights";
 
 async function getProperty(id) {
   await dbConnect();
@@ -210,6 +211,9 @@ export default async function PropertyDetailsPage({ params }) {
                   </p>
                 </div>
               </div>
+
+              {/* AI Analysis Component */}
+              <PropertyAiInsights propertyId={id} />
 
               {/* Safety Tip */}
               <div className="bg-blue-50 rounded-3xl p-6 border border-blue-100">
