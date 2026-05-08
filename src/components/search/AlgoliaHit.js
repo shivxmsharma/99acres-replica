@@ -4,9 +4,11 @@ import Link from "next/link";
 import { MapPin, Bed, Bath, Maximize2, ShieldCheck, Heart, ArrowRightLeft } from "lucide-react";
 import SafeImage from "@/components/common/SafeImage";
 import { useCompare } from "@/context/CompareContext";
+import { useShortlist } from "@/context/ShortlistContext";
 
 export default function AlgoliaHit({ hit }) {
   const { addToCompare } = useCompare();
+  const { isShortlisted, toggleShortlist } = useShortlist();
 
   return (
     <div className="group block relative">
@@ -73,8 +75,24 @@ export default function AlgoliaHit({ hit }) {
 
       {/* Buttons - Outside Link but inside relative container */}
       <div className="absolute top-4 right-4 flex flex-col gap-2 z-10">
-        <button className="p-3 bg-white/90 backdrop-blur-md rounded-full shadow-sm hover:bg-white transition-colors group/heart">
-          <Heart size={18} className="text-gray-400 group-hover/heart:text-red-500 transition-colors" />
+        <button 
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleShortlist(hit);
+          }}
+          className={`p-3 backdrop-blur-md rounded-full shadow-sm transition-all group/heart ${
+            isShortlisted(hit.objectID) 
+              ? "bg-red-50 text-red-500 hover:bg-red-100" 
+              : "bg-white/90 text-gray-400 hover:bg-white"
+          }`}
+          title={isShortlisted(hit.objectID) ? "Remove from Shortlist" : "Add to Shortlist"}
+        >
+          <Heart 
+            size={18} 
+            className={`transition-colors ${isShortlisted(hit.objectID) ? "text-red-500" : "group-hover/heart:text-red-500"}`}
+            fill={isShortlisted(hit.objectID) ? "currentColor" : "none"} 
+          />
         </button>
         <button 
           onClick={(e) => {

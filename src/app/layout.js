@@ -4,6 +4,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import AuthProvider from "@/components/providers/AuthProvider";
 import { CompareProvider } from "@/context/CompareContext";
+import { ShortlistProvider } from "@/context/ShortlistContext";
 import AiAssistant from "@/components/ai/AiAssistant";
 import NotificationListener from "@/components/common/NotificationListener";
 import CompareBar from "@/components/property/CompareBar";
@@ -21,19 +22,21 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={inter.className}>
         <AuthProvider>
-          <CompareProvider>
-            <div className="flex flex-col min-h-screen">
-              <Navbar />
-              <main className="flex-1">
-                {children}
-              </main>
-              <Footer />
-              <NotificationListener />
-              <CompareBar />
-              <AiAssistant />
-              <Toaster position="top-center" reverseOrder={false} />
-            </div>
-          </CompareProvider>
+          <ShortlistProvider>
+            <CompareProvider>
+              <div className="flex flex-col min-h-screen">
+                <Navbar />
+                <main className="flex-1">
+                  {children}
+                </main>
+                <Footer />
+                <NotificationListener />
+                <CompareBar />
+                <AiAssistant />
+                <Toaster position="top-center" reverseOrder={false} />
+              </div>
+            </CompareProvider>
+          </ShortlistProvider>
         </AuthProvider>
       </body>
     </html>

@@ -2,7 +2,7 @@
 
 import { useCompare } from "@/context/CompareContext";
 import SafeImage from "@/components/common/SafeImage";
-import { X, Check, Minus, IndianRupee, MapPin, Maximize2, Bed, Building } from "lucide-react";
+import { X, Check, Minus, IndianRupee, MapPin, Maximize2, Bed, Building, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 
 export default function ComparePage() {
@@ -32,7 +32,7 @@ export default function ComparePage() {
     { label: "Area", key: "sqft", icon: Maximize2, format: (v) => `${v} sq.ft` },
     { label: "City", key: "city", icon: MapPin },
     { label: "Locality", key: "area", icon: MapPin },
-    { label: "Verified", key: "isVerified", type: "boolean" },
+    { label: "Verified", key: "isVerified", type: "boolean", icon: ShieldCheck },
   ];
 
   return (

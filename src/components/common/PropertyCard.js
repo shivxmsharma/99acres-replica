@@ -5,9 +5,11 @@ import Link from "next/link";
 import { MapPin, Home, Maximize2, ShieldCheck, ChevronLeft, ChevronRight, User, CheckCircle2, Heart, ArrowRightLeft } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCompare } from "@/context/CompareContext";
+import { useShortlist } from "@/context/ShortlistContext";
 
 export default function PropertyCard({ property }) {
   const { addToCompare } = useCompare();
+  const { isShortlisted, toggleShortlist } = useShortlist();
   const [imgIndex, setImgIndex] = useState(0);
 
   const {
@@ -94,16 +96,85 @@ export default function PropertyCard({ property }) {
               </>
             )}
           </div>
+
+          {/* Content Section */}
+          <div className="p-8 flex-grow flex flex-col">
+            <div className="flex justify-between items-baseline mb-4">
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-3xl font-black text-gray-900 tracking-tight">₹{price}</span>
+                <span className="text-xs font-black text-primary uppercase tracking-widest">{priceLabel}</span>
+              </div>
+              <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                ₹{Math.round((price * 100000) / (features.sqft || 1000))} / sqft
+              </div>
+            </div>
+
+            <h3 className="font-black text-gray-900 text-xl line-clamp-1 mb-2 group-hover:text-primary transition-colors tracking-tight">
+              {title}
+            </h3>
+
+            <div className="flex items-center gap-2 text-gray-500 font-medium mb-6">
+              <MapPin size={16} className="flex-shrink-0 text-primary" />
+              <span className="truncate text-sm">{location.area}, {location.city}</span>
+            </div>
+
+            {/* Features Row */}
+            <div className="grid grid-cols-2 gap-4 py-6 border-y border-gray-50 mb-6 mt-auto">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-gray-50 flex items-center justify-center text-primary">
+                  <Home size={18} />
+                </div>
+                <div>
+                  <p className="text-[10px] font-black text-gray-400 uppercase leading-none mb-1">Config</p>
+                  <p className="text-sm font-black text-gray-900">{features.bhk} BHK</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-gray-50 flex items-center justify-center text-primary">
+                  <Maximize2 size={18} />
+                </div>
+                <div>
+                  <p className="text-[10px] font-black text-gray-400 uppercase leading-none mb-1">Area</p>
+                  <p className="text-sm font-black text-gray-900">{features.sqft} sqft</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Footer Action */}
+            <div className="flex justify-between items-center pt-2">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-black text-sm">
+                  {owner.name ? owner.name[0].toUpperCase() : 'O'}
+                </div>
+                <div>
+                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">Contact</p>
+                  <p className="text-sm font-black text-gray-900">{owner.name}</p>
+                </div>
+              </div>
+              <button className="bg-gray-900 hover:bg-primary text-white text-[10px] font-black px-6 py-3 rounded-2xl transition-all shadow-xl hover:-translate-y-1 active:translate-y-0 uppercase tracking-widest">
+                View Details
+              </button>
+            </div>
+          </div>
         </div>
       </Link>
 
       {/* Floating Buttons */}
       <div className="absolute top-5 right-5 flex flex-col gap-2 z-30">
         <button 
-          className="p-3 bg-white/90 backdrop-blur-md rounded-full shadow-lg hover:bg-white transition-all text-gray-400 hover:text-red-500"
-          title="Shortlist"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleShortlist(property);
+          }}
+          className={`p-3 backdrop-blur-md rounded-full shadow-lg transition-all ${
+            isShortlisted(_id) 
+              ? "bg-red-50 text-red-500 hover:bg-red-100" 
+              : "bg-white/90 text-gray-400 hover:bg-white hover:text-red-500"
+          }`}
+          title={isShortlisted(_id) ? "Remove from Shortlist" : "Add to Shortlist"}
         >
-          <Heart size={18} />
+          <Heart size={18} fill={isShortlisted(_id) ? "currentColor" : "none"} />
         </button>
         <button 
           onClick={(e) => {
@@ -117,67 +188,6 @@ export default function PropertyCard({ property }) {
           <ArrowRightLeft size={18} />
         </button>
       </div>
-
-        {/* Content Section */}
-        <div className="p-8 flex-grow flex flex-col">
-          <div className="flex justify-between items-baseline mb-4">
-            <div className="flex items-baseline gap-1.5">
-              <span className="text-3xl font-black text-gray-900 tracking-tight">₹{price}</span>
-              <span className="text-xs font-black text-primary uppercase tracking-widest">{priceLabel}</span>
-            </div>
-            <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
-              ₹{Math.round((price * 100000) / (features.sqft || 1000))} / sqft
-            </div>
-          </div>
-
-          <h3 className="font-black text-gray-900 text-xl line-clamp-1 mb-2 group-hover:text-primary transition-colors tracking-tight">
-            {title}
-          </h3>
-
-          <div className="flex items-center gap-2 text-gray-500 font-medium mb-6">
-            <MapPin size={16} className="flex-shrink-0 text-primary" />
-            <span className="truncate text-sm">{location.area}, {location.city}</span>
-          </div>
-
-          {/* Features Row */}
-          <div className="grid grid-cols-2 gap-4 py-6 border-y border-gray-50 mb-6 mt-auto">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-gray-50 flex items-center justify-center text-primary">
-                <Home size={18} />
-              </div>
-              <div>
-                <p className="text-[10px] font-black text-gray-400 uppercase leading-none mb-1">Config</p>
-                <p className="text-sm font-black text-gray-900">{features.bhk} BHK</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-gray-50 flex items-center justify-center text-primary">
-                <Maximize2 size={18} />
-              </div>
-              <div>
-                <p className="text-[10px] font-black text-gray-400 uppercase leading-none mb-1">Area</p>
-                <p className="text-sm font-black text-gray-900">{features.sqft} sqft</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Footer Action */}
-          <div className="flex justify-between items-center pt-2">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-black text-sm">
-                {owner.name ? owner.name[0].toUpperCase() : 'O'}
-              </div>
-              <div>
-                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">Contact</p>
-                <p className="text-sm font-black text-gray-900">{owner.name}</p>
-              </div>
-            </div>
-            <button className="bg-gray-900 hover:bg-primary text-white text-[10px] font-black px-6 py-3 rounded-2xl transition-all shadow-xl hover:-translate-y-1 active:translate-y-0 uppercase tracking-widest">
-              View Details
-            </button>
-          </div>
-        </div>
-      </Link>
     </div>
   );
 }
