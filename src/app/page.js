@@ -1,6 +1,7 @@
 import Hero from "@/components/home/Hero";
 import CategoryGrid from "@/components/home/CategoryGrid";
 import FeaturedProperties from "@/components/home/FeaturedProperties";
+import RealEstateTools from "@/components/home/RealEstateTools";
 
 export default function Home() {
   return (
@@ -9,6 +10,7 @@ export default function Home() {
       <CategoryGrid />
       
       <FeaturedProperties />
+      <RealEstateTools />
 
       {/* Why Choose Us / Trust Section */}
       <section className="py-20 bg-white">

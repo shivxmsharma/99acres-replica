@@ -5,19 +5,43 @@ import { FaFacebookF as Facebook, FaTwitter as Twitter, FaInstagram as Instagram
 const FOOTER_SECTIONS = [
   {
     title: "Real Estate in India",
-    links: ["Property in Delhi", "Property in Mumbai", "Property in Bangalore", "Property in Pune", "Property in Chennai", "Property in Gurgaon"],
+    links: [
+      { label: "Property in Delhi", href: "/search" },
+      { label: "Property in Mumbai", href: "/search" },
+      { label: "Property in Bangalore", href: "/search" },
+      { label: "Property in Pune", href: "/search" },
+      { label: "Property in Gurgaon", href: "/search" }
+    ],
   },
   {
     title: "New Projects in India",
-    links: ["New Projects in Noida", "New Projects in Kolkata", "New Projects in Hyderabad", "New Projects in Ahmedabad", "New Projects in Chandigarh"],
+    links: [
+      { label: "New Projects in Noida", href: "/search" },
+      { label: "New Projects in Kolkata", href: "/search" },
+      { label: "New Projects in Hyderabad", href: "/search" },
+      { label: "New Projects in Ahmedabad", href: "/search" },
+      { label: "New Projects in Chandigarh", href: "/search" }
+    ],
   },
   {
     title: "Services",
-    links: ["Rent Receipt", "Property Valuation", "Home Loans", "Check Credit Score", "Home Services", "Legal Services"],
+    links: [
+      { label: "EMI Calculator", href: "/tools/emi-calculator" },
+      { label: "Stamp Duty Calculator", href: "/tools/stamp-duty" },
+      { label: "Property Valuation", href: "/tools/valuation" },
+      { label: "Compare Properties", href: "/compare" },
+      { label: "Legal Services", href: "#" }
+    ],
   },
   {
     title: "Company",
-    links: ["About Us", "Contact Us", "Careers", "Terms & Conditions", "Privacy Policy", "Testimonials"],
+    links: [
+      { label: "About Us", href: "#" },
+      { label: "Contact Us", href: "#" },
+      { label: "Careers", href: "#" },
+      { label: "Terms & Conditions", href: "#" },
+      { label: "Privacy Policy", href: "#" }
+    ],
   },
 ];
 
@@ -33,8 +57,8 @@ export default function Footer() {
               <h4 className="font-bold text-sm mb-4 uppercase tracking-wider text-blue-200">{section.title}</h4>
               <ul className="space-y-2">
                 {section.links.map((link) => (
-                  <li key={link}>
-                    <Link href="#" className="text-xs text-gray-400 hover:text-white transition-colors">{link}</Link>
+                  <li key={link.label}>
+                    <Link href={link.href} className="text-xs text-gray-400 hover:text-white transition-colors">{link.label}</Link>
                   </li>
                 ))}
               </ul>

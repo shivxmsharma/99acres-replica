@@ -1,43 +1,33 @@
-export function calculateTrustScore(property, owner = {}) {
+/**
+ * Calculates a trust score (0-100) for a property listing
+ * based on completeness and verification status.
+ */
+export function calculateTrustScore(property) {
   let score = 0;
 
-  // Photos — 4 pts each, max 20
-  const photosCount = property.photos?.length || property.images?.length || 0;
-  score += Math.min(photosCount * 4, 20);
+  // 1. Basic Verification (40 points)
+  if (property.isVerified) score += 40;
 
-  // Amenities — 2 pts each, max 10
-  score += Math.min((property.amenities?.length || 0) * 2, 10);
+  // 2. Photos (20 points)
+  if (property.images && property.images.length > 5) score += 20;
+  else if (property.images && property.images.length > 0) score += 10;
 
-  // Address completeness — max 15
-  if (property.address?.locality || property.location?.area) score += 5;
-  if (property.address?.city || property.location?.city) score += 5;
-  if (property.address?.pincode) score += 5;
+  // 3. Description Depth (15 points)
+  if (property.description && property.description.length > 200) score += 15;
+  else if (property.description && property.description.length > 50) score += 5;
 
-  // Price set — 5 pts
-  if (property.price > 0) score += 5;
+  // 4. Coordinates (10 points)
+  if (property.location?.coordinates?.lat) score += 10;
 
-  // Property details — max 15
-  const d = property.details || property.features || {};
-  if (d.bedrooms || d.bhk) score += 3;
-  if (d.bathrooms) score += 3;
-  if (d.area || d.sqft) score += 3;
-  if (d.furnishing) score += 3;
-  if (d.constructionStatus) score += 3;
+  // 5. Owner Info (15 points)
+  if (property.owner?.name && property.owner?.mobile) score += 15;
 
-  // Owner verified phone — 10 pts
-  if (owner?.phone) score += 10;
-  // Platform-verified owner — 10 pts
-  if (owner?.isVerified) score += 10;
-
-  // RERA verified — 15 pts
-  if (property.isReraVerified) score += 15;
-
-  return Math.min(score, 100);
+  return score;
 }
 
-export function getTrustMeta(score) {
-  if (score >= 80) return { label: "Highly Trusted", color: "emerald" };
-  if (score >= 60) return { label: "Verified", color: "blue" };
-  if (score >= 40) return { label: "Moderate", color: "amber" };
-  return { label: "Unverified", color: "red" };
+export function getTrustLabel(score) {
+  if (score >= 80) return { label: "EXCELLENT", color: "text-emerald-500", bg: "bg-emerald-50" };
+  if (score >= 60) return { label: "VERY GOOD", color: "text-blue-500", bg: "bg-blue-50" };
+  if (score >= 40) return { label: "GOOD", color: "text-amber-500", bg: "bg-amber-50" };
+  return { label: "LOW", color: "text-gray-400", bg: "bg-gray-50" };
 }

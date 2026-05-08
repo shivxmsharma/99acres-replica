@@ -36,6 +36,14 @@ const NAV_LINKS = [
       { label: "Agent Services", href: "/dashboard" }
     ] 
   },
+  { 
+    name: "Real Estate Tools", 
+    links: [
+      { label: "EMI Calculator", href: "/tools/emi-calculator" },
+      { label: "Stamp Duty Calculator", href: "/tools/stamp-duty" },
+      { label: "Property Valuation", href: "/tools/valuation" }
+    ] 
+  },
 ];
 
 export default function Navbar() {

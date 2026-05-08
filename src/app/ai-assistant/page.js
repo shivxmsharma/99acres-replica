@@ -11,11 +11,18 @@ export default function AiAssistantPage() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const sendMessage = async (e) => {
-    e.preventDefault();
-    if (!input.trim() || loading) return;
+  const SUGGESTIONS = [
+    { label: "Calculate EMI", prompt: "Help me calculate the EMI for a 50 lakh loan at 8.5% for 20 years." },
+    { label: "Check Valuation", prompt: "How do I check the valuation of a 3BHK in Sector 15, Gurgaon?" },
+    { label: "Compare Properties", prompt: "Show me how to compare properties side-by-side." }
+  ];
 
-    const userMessage = { role: "user", content: input };
+  const sendMessage = async (e, customInput = null) => {
+    if (e) e.preventDefault();
+    const finalInput = customInput || input;
+    if (!finalInput.trim() || loading) return;
+
+    const userMessage = { role: "user", content: finalInput };
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
     setLoading(true);
@@ -97,6 +104,19 @@ export default function AiAssistantPage() {
                 </div>
               </div>
             )}
+          </div>
+          
+          {/* Suggestions */}
+          <div className="px-8 py-4 bg-gray-50/50 border-t border-gray-100 flex gap-3 overflow-x-auto no-scrollbar">
+            {SUGGESTIONS.map((s) => (
+              <button
+                key={s.label}
+                onClick={() => sendMessage(null, s.prompt)}
+                className="whitespace-nowrap px-4 py-2 bg-white border border-gray-100 rounded-full text-[10px] font-black uppercase tracking-widest text-[#0041C2] hover:bg-[#0041C2] hover:text-white transition-all shadow-sm"
+              >
+                {s.label}
+              </button>
+            ))}
           </div>
 
           {/* Input Box */}

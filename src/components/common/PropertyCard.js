@@ -2,11 +2,14 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { MapPin, Home, Maximize2, ShieldCheck, ChevronLeft, ChevronRight, User, CheckCircle2 } from "lucide-react";
+import { MapPin, Home, Maximize2, ShieldCheck, ChevronLeft, ChevronRight, User, CheckCircle2, Heart, ArrowRightLeft } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useCompare } from "@/context/CompareContext";
 
 export default function PropertyCard({ property }) {
+  const { addToCompare } = useCompare();
   const [imgIndex, setImgIndex] = useState(0);
+
   const {
     _id,
     title,
@@ -33,63 +36,87 @@ export default function PropertyCard({ property }) {
   };
 
   return (
-    <Link href={`/property/${_id}`} className="block h-full group">
-      <div className="bg-white rounded-[40px] overflow-hidden shadow-sm border border-gray-100 hover:shadow-2xl hover:shadow-primary/5 transition-all duration-500 flex flex-col h-full relative">
-        
-        {/* Image Section with Slider */}
-        <div className="relative h-64 w-full overflow-hidden">
-          <AnimatePresence mode="wait">
-            <motion.img
-              key={imgIndex}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              src={images[imgIndex] || "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=1000"}
-              alt={title}
-              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-            />
-          </AnimatePresence>
+    <div className="relative group block h-full">
+      <Link href={`/property/${_id}`} className="block h-full">
+        <div className="bg-white rounded-[40px] overflow-hidden shadow-sm border border-gray-100 hover:shadow-2xl hover:shadow-primary/5 transition-all duration-500 flex flex-col h-full relative">
+          
+          {/* Image Section with Slider */}
+          <div className="relative h-64 w-full overflow-hidden">
+            <AnimatePresence mode="wait">
+              <motion.img
+                key={imgIndex}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                src={images[imgIndex] || "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=1000"}
+                alt={title}
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              />
+            </AnimatePresence>
 
-          {/* Badges */}
-          <div className="absolute top-5 left-5 flex flex-col gap-2">
-            {isVerified && (
-              <div className="bg-white/90 backdrop-blur-md text-green-600 text-[10px] font-black px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-xl">
-                <ShieldCheck size={14} /> VERIFIED
+            {/* Badges */}
+            <div className="absolute top-5 left-5 flex flex-col gap-2">
+              {isVerified && (
+                <div className="bg-white/90 backdrop-blur-md text-green-600 text-[10px] font-black px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-xl">
+                  <ShieldCheck size={14} /> VERIFIED
+                </div>
+              )}
+              <div className="bg-primary/90 backdrop-blur-md text-white text-[10px] font-black px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-xl">
+                <User size={14} /> {owner.role?.toUpperCase() || 'OWNER'}
+              </div>
+            </div>
+
+            {constructionStatus && (
+              <div className="absolute top-5 right-5 z-20 bg-black/40 backdrop-blur-md text-white text-[9px] font-black px-3 py-1.5 rounded-full border border-white/20">
+                {constructionStatus.toUpperCase()}
               </div>
             )}
-            <div className="bg-primary/90 backdrop-blur-md text-white text-[10px] font-black px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-xl">
-              <User size={14} /> {owner.role?.toUpperCase() || 'OWNER'}
-            </div>
+
+            {/* Slider Controls */}
+            {images.length > 1 && (
+              <>
+                <button 
+                  onClick={prevImg}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/20 backdrop-blur-md text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:bg-white hover:text-primary z-10"
+                >
+                  <ChevronLeft size={20} />
+                </button>
+                <button 
+                  onClick={nextImg}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/20 backdrop-blur-md text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:bg-white hover:text-primary z-10"
+                >
+                  <ChevronRight size={20} />
+                </button>
+                <div className="absolute bottom-4 right-6 bg-black/40 backdrop-blur-md text-white text-[10px] font-black px-3 py-1 rounded-full border border-white/10">
+                  {imgIndex + 1} / {images.length}
+                </div>
+              </>
+            )}
           </div>
-
-          {constructionStatus && (
-            <div className="absolute top-5 right-5 bg-black/40 backdrop-blur-md text-white text-[9px] font-black px-3 py-1.5 rounded-full border border-white/20">
-              {constructionStatus.toUpperCase()}
-            </div>
-          )}
-
-          {/* Slider Controls */}
-          {images.length > 1 && (
-            <>
-              <button 
-                onClick={prevImg}
-                className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/20 backdrop-blur-md text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:bg-white hover:text-primary z-10"
-              >
-                <ChevronLeft size={20} />
-              </button>
-              <button 
-                onClick={nextImg}
-                className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/20 backdrop-blur-md text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:bg-white hover:text-primary z-10"
-              >
-                <ChevronRight size={20} />
-              </button>
-              <div className="absolute bottom-4 right-6 bg-black/40 backdrop-blur-md text-white text-[10px] font-black px-3 py-1 rounded-full border border-white/10">
-                {imgIndex + 1} / {images.length}
-              </div>
-            </>
-          )}
         </div>
+      </Link>
+
+      {/* Floating Buttons */}
+      <div className="absolute top-5 right-5 flex flex-col gap-2 z-30">
+        <button 
+          className="p-3 bg-white/90 backdrop-blur-md rounded-full shadow-lg hover:bg-white transition-all text-gray-400 hover:text-red-500"
+          title="Shortlist"
+        >
+          <Heart size={18} />
+        </button>
+        <button 
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            addToCompare(property);
+          }}
+          className="p-3 bg-white/90 backdrop-blur-md rounded-full shadow-lg hover:bg-primary hover:text-white transition-all text-gray-400"
+          title="Compare"
+        >
+          <ArrowRightLeft size={18} />
+        </button>
+      </div>
 
         {/* Content Section */}
         <div className="p-8 flex-grow flex flex-col">
@@ -150,7 +177,7 @@ export default function PropertyCard({ property }) {
             </button>
           </div>
         </div>
-      </div>
-    </Link>
+      </Link>
+    </div>
   );
 }

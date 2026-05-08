@@ -3,8 +3,10 @@ import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import AuthProvider from "@/components/providers/AuthProvider";
+import { CompareProvider } from "@/context/CompareContext";
 import AiAssistant from "@/components/ai/AiAssistant";
 import NotificationListener from "@/components/common/NotificationListener";
+import CompareBar from "@/components/property/CompareBar";
 import { Toaster } from "react-hot-toast";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -19,16 +21,19 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={inter.className}>
         <AuthProvider>
-          <div className="flex flex-col min-h-screen">
-            <Navbar />
-            <main className="flex-1">
-              {children}
-            </main>
-            <Footer />
-            <NotificationListener />
-            <AiAssistant />
-            <Toaster position="top-center" reverseOrder={false} />
-          </div>
+          <CompareProvider>
+            <div className="flex flex-col min-h-screen">
+              <Navbar />
+              <main className="flex-1">
+                {children}
+              </main>
+              <Footer />
+              <NotificationListener />
+              <CompareBar />
+              <AiAssistant />
+              <Toaster position="top-center" reverseOrder={false} />
+            </div>
+          </CompareProvider>
         </AuthProvider>
       </body>
     </html>

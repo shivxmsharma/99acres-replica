@@ -19,6 +19,8 @@ import {
 
 import ContactActions from "@/components/property/ContactActions";
 import PropertyAiInsights from "@/components/ai/PropertyAiInsights";
+import PropertyTrustBadge from "@/components/property/PropertyTrustBadge";
+import PropertyReviews from "@/components/property/PropertyReviews";
 
 async function getProperty(id) {
   await dbConnect();
@@ -184,6 +186,9 @@ export default async function PropertyDetailsPage({ params }) {
               </div>
             </div>
 
+            {/* Reviews Section */}
+            <PropertyReviews propertyId={id} />
+
           </div>
 
           {/* Right Column: Sidebar */}
@@ -212,7 +217,8 @@ export default async function PropertyDetailsPage({ params }) {
                 </div>
               </div>
 
-              {/* AI Analysis Component */}
+              {/* Trust & AI Analysis */}
+              <PropertyTrustBadge property={property} />
               <PropertyAiInsights propertyId={id} />
 
               {/* Safety Tip */}

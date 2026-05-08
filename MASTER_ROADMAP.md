@@ -40,14 +40,15 @@
 - [x] Map-view toggle for search results.
 - [x] Real-time Lead notifications via Pusher.
 
-### Phase 4: Real Estate Tools & Trust [UPCOMING]
-- [ ] EMI, Stamp Duty, and Valuation Calculators.
-- [ ] Property Trust Score & Verification badges.
+### Phase 4: Real Estate Tools & Trust [COMPLETE]
+- [x] EMI, Stamp Duty, and Valuation Calculators.
+- [x] Property Trust Score & Verification badges.
+- [x] Property Comparison tool.
 
-### Phase 5: Owner Dashboard & Professional Tools [UPCOMING]
-- [ ] Advanced dashboard for listing management.
-- [ ] Razorpay integration for Featured Listings (Monetization).
-- [ ] Professional review and rating system.
+### Phase 5: Owner Dashboard & Professional Tools [COMPLETE]
+- [x] Advanced dashboard for listing management.
+- [x] Razorpay integration for Featured Listings (Monetization).
+- [x] Professional review and rating system.
 
 ---
 **This roadmap ensures that every single feature from 99acres.com is mapped and implemented, enhanced by NestIQ's intelligence.**

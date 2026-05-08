@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useSession } from "next-auth/react";
-import { pusherClient } from "@/lib/pusherClient";
+import { getPusherClient } from "@/lib/pusherClient";
 import toast from "react-hot-toast";
 import { Bell } from "lucide-react";
 
@@ -12,8 +12,11 @@ export default function NotificationListener() {
   useEffect(() => {
     if (!session?.user?.email) return;
 
+    const pusher = getPusherClient();
+    if (!pusher) return;
+
     const channelName = `user-${session.user.email.replace(/[^a-zA-Z0-9]/g, "_")}`;
-    const channel = pusherClient.subscribe(channelName);
+    const channel = pusher.subscribe(channelName);
 
     channel.bind("new-lead", (data) => {
       toast.custom((t) => (
@@ -58,7 +61,8 @@ export default function NotificationListener() {
     });
 
     return () => {
-      pusherClient.unsubscribe(channelName);
+      const pusher = getPusherClient();
+      if (pusher) pusher.unsubscribe(channelName);
     };
   }, [session]);
 

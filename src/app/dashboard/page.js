@@ -25,6 +25,8 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
+import Script from "next/script";
+import toast from "react-hot-toast";
 
 const TABS = [
   { id: "overview", label: "Overview", icon: LayoutDashboard },
@@ -71,6 +73,50 @@ export default function DashboardPage() {
     }
   };
 
+  const handleBoost = async (propertyId) => {
+    try {
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ propertyId, amount: 999 }) // ₹999 for boost
+      });
+      
+      const { order } = await res.json();
+      
+      const options = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        amount: order.amount,
+        currency: order.currency,
+        name: "99acres Replica",
+        description: "Boost Property Listing",
+        order_id: order.id,
+        handler: async function (response) {
+          const verifyRes = await fetch("/api/checkout/verify", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ ...response, propertyId })
+          });
+          const verifyData = await verifyRes.json();
+          if (verifyData.success) {
+            toast.success("Listing Boosted Successfully!");
+            fetchDashboardData();
+          }
+        },
+        prefill: {
+          name: session.user.name,
+          email: session.user.email
+        },
+        theme: { color: "#0041C2" }
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+    } catch (error) {
+      toast.error("Failed to initiate payment");
+      console.error(error);
+    }
+  };
+
   const handleRespond = async () => {
     if (!responseMsg.trim()) return;
     setIsSubmitting(true);
@@ -95,6 +141,7 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-gray-50/50 flex">
+      <Script src="https://checkout.razorpay.com/v1/checkout.js" />
       {/* Sidebar */}
       <aside className="w-72 bg-white border-r border-gray-100 flex flex-col sticky top-16 h-[calc(100vh-64px)]">
         <div className="p-8">
@@ -267,8 +314,20 @@ export default function DashboardPage() {
                             <MapPin size={12} /> {property.location.area}, {property.location.city}
                           </div>
                           
-                          <div className="mt-auto pt-4 border-t border-gray-50 flex items-center justify-between">
+                           <div className="mt-auto pt-4 border-t border-gray-50 flex items-center justify-between">
                             <div className="flex gap-2">
+                              {property.isFeatured ? (
+                                <span className="px-3 py-1 bg-amber-50 text-amber-600 rounded-lg text-[8px] font-black uppercase tracking-widest border border-amber-100 flex items-center gap-1">
+                                  <Sparkles size={10} /> Boosted
+                                </span>
+                              ) : (
+                                <button 
+                                  onClick={() => handleBoost(property._id)}
+                                  className="px-3 py-1 bg-gray-900 text-white rounded-lg text-[8px] font-black uppercase tracking-widest hover:bg-primary transition-all flex items-center gap-1"
+                                >
+                                  <TrendingUp size={10} /> Boost Listing
+                                </button>
+                              )}
                               <button className="p-2 text-gray-400 hover:text-primary hover:bg-blue-50 rounded-xl transition-all">
                                 <Edit3 size={18} />
                               </button>
