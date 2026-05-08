@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Search, Menu, User, Bell, ChevronDown, Plus } from "lucide-react";
+import { Search, Menu, User, Bell, ChevronDown, Plus, Heart } from "lucide-react";
 import { useSession, signIn, signOut } from "next-auth/react";
 
 const NAV_LINKS = [
@@ -92,6 +92,9 @@ export default function Navbar() {
                 <Bell size={20} />
                 <span className="absolute top-1 right-1 w-2 h-2 bg-secondary rounded-full border-2 border-primary"></span>
               </button>
+              <Link href="/shortlist" className="p-2 hover:bg-blue-700 rounded-full transition-colors relative" title="Shortlist">
+                <Heart size={20} />
+              </Link>
               <div className="relative group">
                 {status === "authenticated" ? (
                   <>
@@ -111,6 +114,9 @@ export default function Navbar() {
                       </div>
                       <Link href="/dashboard" className="block px-4 py-2.5 text-xs font-bold text-gray-600 hover:text-primary hover:bg-blue-50 transition-all">
                         Dashboard
+                      </Link>
+                      <Link href="/shortlist" className="block px-4 py-2.5 text-xs font-bold text-gray-600 hover:text-primary hover:bg-blue-50 transition-all">
+                        My Shortlist
                       </Link>
                       <Link href="/post-property" className="block px-4 py-2.5 text-xs font-bold text-gray-600 hover:text-primary hover:bg-blue-50 transition-all">
                         Post Property

@@ -30,6 +30,7 @@ const FOOTER_SECTIONS = [
       { label: "Stamp Duty Calculator", href: "/tools/stamp-duty" },
       { label: "Property Valuation", href: "/tools/valuation" },
       { label: "Compare Properties", href: "/compare" },
+      { label: "Shortlisted Properties", href: "/shortlist" },
       { label: "Legal Services", href: "#" }
     ],
   },
