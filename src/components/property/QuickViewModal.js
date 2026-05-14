@@ -7,8 +7,16 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import PropertyAiInsights from "../ai/PropertyAiInsights";
+import { useEffect } from "react";
 
 export default function QuickViewModal({ property, isOpen, onClose }) {
+  useEffect(() => {
+    if (isOpen && property?._id) {
+      // Increment view count via the API
+      fetch(`/api/properties/${property._id}`).catch(err => console.error("Failed to increment view:", err));
+    }
+  }, [isOpen, property?._id]);
+
   if (!isOpen || !property) return null;
 
   return (

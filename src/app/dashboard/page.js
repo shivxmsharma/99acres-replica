@@ -276,8 +276,10 @@ export default function DashboardPage() {
                       <div className="w-12 h-12 bg-purple-50 rounded-2xl flex items-center justify-center text-purple-600 mb-6">
                         <UserIcon size={24} />
                       </div>
-                      <h4 className="text-4xl font-black text-gray-900 leading-none">1.2k</h4>
-                      <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-2">Profile Views</p>
+                      <h4 className="text-4xl font-black text-gray-900 leading-none">
+                        {listings.reduce((acc, p) => acc + (p.views || 0), 0).toLocaleString()}
+                      </h4>
+                      <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-2">Listing Views</p>
                     </div>
                   </div>
 
@@ -330,8 +332,14 @@ export default function DashboardPage() {
                             </h3>
                             <span className="text-sm font-black text-primary">₹{property.price} {property.priceLabel}</span>
                           </div>
-                          <div className="flex items-center gap-1 text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-4">
-                            <MapPin size={12} /> {property.location.area}, {property.location.city}
+                          <div className="flex items-center gap-3 text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-4">
+                            <div className="flex items-center gap-1">
+                              <MapPin size={12} /> {property.location.area}, {property.location.city}
+                            </div>
+                            <span>•</span>
+                            <div className="flex items-center gap-1 text-primary">
+                              <UserIcon size={12} /> {property.views || 0} Views
+                            </div>
                           </div>
                           
                            <div className="mt-auto pt-4 border-t border-gray-50 flex items-center justify-between">

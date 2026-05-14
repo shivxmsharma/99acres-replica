@@ -9,7 +9,11 @@ export async function GET(request, { params }) {
   try {
     await dbConnect();
     const { id } = await params;
-    const property = await Property.findById(id);
+    const property = await Property.findByIdAndUpdate(
+      id, 
+      { $inc: { views: 1 } }, 
+      { new: true }
+    );
 
     if (!property) {
       return NextResponse.json({ success: false, error: "Property not found" }, { status: 404 });
