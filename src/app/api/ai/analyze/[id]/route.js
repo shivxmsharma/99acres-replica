@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import Property from "@/models/Property";
-import { getGeminiModel } from "@/lib/gemini";
+import ai from "@/lib/gemini";
 
 export async function GET(req, { params }) {
   try {
@@ -37,10 +37,12 @@ Provide the analysis in the following JSON format:
 }
 Return ONLY the JSON.`;
 
-    const model = getGeminiModel("gemini-1.5-flash");
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text().replace(/```json/g, "").replace(/```/g, "").trim();
+    const response = await ai.models.generateContent({
+      model: "gemini-3-flash-preview",
+      contents: [{ role: 'user', parts: [{ text: prompt }] }],
+    });
+
+    const text = response.text.replace(/```json/g, "").replace(/```/g, "").trim();
     
     return NextResponse.json(JSON.parse(text));
   } catch (error) {

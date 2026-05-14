@@ -1,19 +1,24 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenAI } from "@google/genai";
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const ai = new GoogleGenAI({ 
+  apiKey: process.env.GEMINI_API_KEY 
+});
 
-export const getGeminiModel = (modelName = "gemini-1.5-flash") => {
-  return genAI.getGenerativeModel({ model: modelName });
+export const getGeminiModel = (modelName = "gemini-3-flash-preview") => {
+  return ai.models;
 };
 
-export async function generateContent(prompt, modelName = "gemini-1.5-flash") {
+export async function generateContent(prompt, modelName = "gemini-3-flash-preview") {
   try {
-    const model = getGeminiModel(modelName);
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    return response.text();
+    const response = await ai.models.generateContent({
+      model: modelName,
+      contents: [{ role: 'user', parts: [{ text: prompt }] }],
+    });
+    return response.text;
   } catch (error) {
     console.error("Gemini API Error:", error);
     throw error;
   }
 }
+
+export default ai;

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import {
   Sparkles, CheckCircle2, AlertCircle, AlertTriangle,
-  TrendingUp, Loader2, ChevronDown, ChevronUp, RefreshCw,
+  TrendingUp, Loader2, ChevronDown, ChevronUp, RefreshCw, Bot,
 } from "lucide-react";
 
 const VERDICT = {

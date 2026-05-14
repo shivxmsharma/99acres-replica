@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import Property from "@/models/Property";
-import { getGeminiModel } from "@/lib/gemini";
+import ai from "@/lib/gemini";
 
 export async function POST(req) {
   try {
@@ -32,24 +32,25 @@ Be concise, professional, and friendly. Use formatting like bullet points to mak
 If you suggest properties, provide their basic details.
 ${propertyContext}`;
 
-    const model = getGeminiModel("gemini-1.5-flash");
+    // Convert messages to Gemini format
+    const contents = messages.map(msg => ({
+      role: msg.role === "assistant" ? "model" : "user",
+      parts: [{ text: msg.content }]
+    }));
 
-    // Convert history into Gemini format
-    const chat = model.startChat({
-      history: messages.slice(0, -1).map(msg => ({
-        role: msg.role === "assistant" ? "model" : "user",
-        parts: [{ text: msg.content }]
-      })),
+    // Generate content using the new SDK pattern and Gemini 3 model
+    const response = await ai.models.generateContent({
+      model: "gemini-3-flash-preview",
+      systemInstruction: {
+        parts: [{ text: systemInstruction }]
+      },
+      contents: contents,
       generationConfig: {
         temperature: 0.7,
       },
     });
 
-    const result = await chat.sendMessage(userQuestion + (propertyContext ? "\n\nPlease keep these properties in mind while answering." : ""));
-    const response = await result.response;
-    const text = response.text();
-
-    return NextResponse.json({ reply: text });
+    return NextResponse.json({ reply: response.text });
   } catch (error) {
     console.error("AI Assistant API Error:", error);
     return NextResponse.json(

@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server";
-import { GoogleGenerativeAI } from "@google/generative-ai";
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+import ai from "@/lib/gemini";
 
 export async function POST(req) {
   try {
@@ -11,8 +9,6 @@ export async function POST(req) {
     if (!location || !size) {
       return NextResponse.json({ error: "Location and size are required" }, { status: 400 });
     }
-
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const prompt = `You are an expert real estate appraiser in India. 
     Estimate the current market valuation based on these details:
@@ -31,11 +27,13 @@ export async function POST(req) {
       "confidence": "Low | Medium | High"
     }`;
 
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
-    
+    const response = await ai.models.generateContent({
+      model: "gemini-3-flash-preview",
+      contents: [{ role: 'user', parts: [{ text: prompt }] }],
+    });
+
     // Cleanup JSON
+    const text = response.text;
     const cleanedText = text.replace(/```json/g, "").replace(/```/g, "").trim();
     const data = JSON.parse(cleanedText);
 
