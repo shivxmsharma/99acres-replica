@@ -139,6 +139,26 @@ export default function DashboardPage() {
     }
   };
 
+  const handleDelete = async (propertyId) => {
+    if (!window.confirm("Are you sure you want to delete this listing? This action cannot be undone.")) return;
+    
+    try {
+      const res = await fetch(`/api/properties/${propertyId}`, {
+        method: "DELETE",
+      });
+      
+      const data = await res.json();
+      if (data.success) {
+        toast.success("Listing deleted successfully");
+        setListings(listings.filter(p => p._id !== propertyId));
+      } else {
+        throw new Error(data.error);
+      }
+    } catch (error) {
+      toast.error(error.message || "Failed to delete listing");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50/50 flex">
       <Script src="https://checkout.razorpay.com/v1/checkout.js" />
@@ -328,10 +348,16 @@ export default function DashboardPage() {
                                   <TrendingUp size={10} /> Boost Listing
                                 </button>
                               )}
-                              <button className="p-2 text-gray-400 hover:text-primary hover:bg-blue-50 rounded-xl transition-all">
+                              <Link 
+                                href={`/dashboard/edit/${property._id}`}
+                                className="p-2 text-gray-400 hover:text-primary hover:bg-blue-50 rounded-xl transition-all"
+                              >
                                 <Edit3 size={18} />
-                              </button>
-                              <button className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all">
+                              </Link>
+                              <button 
+                                onClick={() => handleDelete(property._id)}
+                                className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
+                              >
                                 <Trash2 size={18} />
                               </button>
                             </div>
