@@ -38,6 +38,8 @@ export const syncPropertiesToAlgolia = async (property) => {
       coverPhoto: property.photos?.[0]?.url || property.images?.[0] || '',
       amenities: property.amenities || [],
       status: property.status || 'active',
+      isFeatured: property.isFeatured || false,
+      isVerified: property.isVerified || false,
       createdAt: property.createdAt
         ? new Date(property.createdAt).getTime()
         : Date.now(),

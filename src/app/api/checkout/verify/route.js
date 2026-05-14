@@ -20,7 +20,16 @@ export async function POST(request) {
 
     if (razorpay_signature === expectedSign) {
       await dbConnect();
-      await Property.findByIdAndUpdate(propertyId, { isFeatured: true });
+      const updatedProperty = await Property.findByIdAndUpdate(
+        propertyId, 
+        { isFeatured: true },
+        { new: true }
+      );
+      
+      // Sync to Algolia
+      const { syncPropertiesToAlgolia } = await import("@/lib/algolia");
+      await syncPropertiesToAlgolia(updatedProperty);
+
       return NextResponse.json({ success: true, message: "Payment verified and property boosted!" });
     } else {
       return NextResponse.json({ success: false, message: "Invalid signature" }, { status: 400 });
