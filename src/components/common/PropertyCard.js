@@ -2,15 +2,17 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { MapPin, Home, Maximize2, ShieldCheck, ChevronLeft, ChevronRight, User, CheckCircle2, Heart, ArrowRightLeft } from "lucide-react";
+import { MapPin, Home, Maximize2, ShieldCheck, ChevronLeft, ChevronRight, User, CheckCircle2, Heart, ArrowRightLeft, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCompare } from "@/context/CompareContext";
 import { useShortlist } from "@/context/ShortlistContext";
+import QuickViewModal from "../property/QuickViewModal";
 
 export default function PropertyCard({ property }) {
   const { addToCompare } = useCompare();
   const { isShortlisted, toggleShortlist } = useShortlist();
   const [imgIndex, setImgIndex] = useState(0);
+  const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
 
   const {
     _id,
@@ -151,13 +153,31 @@ export default function PropertyCard({ property }) {
                   <p className="text-sm font-black text-gray-900">{owner.name}</p>
                 </div>
               </div>
-              <button className="bg-gray-900 hover:bg-primary text-white text-[10px] font-black px-6 py-3 rounded-2xl transition-all shadow-xl hover:-translate-y-1 active:translate-y-0 uppercase tracking-widest">
-                View Details
-              </button>
+              <div className="flex gap-2">
+                <button 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setIsQuickViewOpen(true);
+                  }}
+                  className="bg-gray-100 hover:bg-gray-200 text-gray-900 text-[10px] font-black px-4 py-3 rounded-2xl transition-all uppercase tracking-widest flex items-center gap-2"
+                >
+                  <Sparkles size={14} className="text-primary" /> Quick View
+                </button>
+                <Link href={`/property/${_id}`} className="bg-gray-900 hover:bg-primary text-white text-[10px] font-black px-6 py-3 rounded-2xl transition-all shadow-xl hover:-translate-y-1 active:translate-y-0 uppercase tracking-widest">
+                  Details
+                </Link>
+              </div>
             </div>
           </div>
         </div>
       </Link>
+
+      <QuickViewModal 
+        property={property} 
+        isOpen={isQuickViewOpen} 
+        onClose={() => setIsQuickViewOpen(false)} 
+      />
 
       {/* Floating Buttons */}
       <div className="absolute top-5 right-5 flex flex-col gap-2 z-30">

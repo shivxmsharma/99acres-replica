@@ -5,10 +5,25 @@ import { MapPin, Bed, Bath, Maximize2, ShieldCheck, Heart, ArrowRightLeft } from
 import SafeImage from "@/components/common/SafeImage";
 import { useCompare } from "@/context/CompareContext";
 import { useShortlist } from "@/context/ShortlistContext";
+import QuickViewModal from "@/components/property/QuickViewModal";
+import { useState } from "react";
+import { Sparkles } from "lucide-react";
 
 export default function AlgoliaHit({ hit }) {
   const { addToCompare } = useCompare();
   const { isShortlisted, toggleShortlist } = useShortlist();
+  const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
+
+  // Normalize hit data for QuickViewModal
+  const property = {
+    _id: hit.objectID,
+    ...hit,
+    images: hit.images || [hit.coverPhoto],
+    location: { area: hit.area, city: hit.city },
+    features: { bhk: hit.bhk, sqft: hit.sqft },
+    details: { bedrooms: hit.bhk, sqft: hit.sqft },
+    owner: { name: hit.ownerName || 'Agent', role: hit.ownerType || 'Agent' }
+  };
 
   return (
     <div className="group block relative">
@@ -105,7 +120,24 @@ export default function AlgoliaHit({ hit }) {
         >
           <ArrowRightLeft size={18} className="text-gray-400 group-hover/compare:text-white transition-colors" />
         </button>
+        <button 
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setIsQuickViewOpen(true);
+          }}
+          className="p-3 bg-white/90 backdrop-blur-md rounded-full shadow-sm hover:bg-primary hover:text-white transition-all group/quickview text-primary"
+          title="Quick View"
+        >
+          <Sparkles size={18} className="transition-colors" />
+        </button>
       </div>
+
+      <QuickViewModal 
+        property={property} 
+        isOpen={isQuickViewOpen} 
+        onClose={() => setIsQuickViewOpen(false)} 
+      />
     </div>
   );
 }
