@@ -93,7 +93,7 @@ export default function QuickViewModal({ property, isOpen, onClose }) {
                 <div className="bg-gray-50 p-4 rounded-3xl border border-gray-100">
                   <Maximize2 size={18} className="text-primary mb-2" />
                   <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Area</p>
-                  <p className="text-sm font-black text-gray-900">{property.details?.sqft || property.features?.sqft} sqft</p>
+                  <p className="text-sm font-black text-gray-900">{property.details?.area || property.features?.sqft || 0} sqft</p>
                 </div>
                 <div className="bg-gray-50 p-4 rounded-3xl border border-gray-100">
                   <Home size={18} className="text-primary mb-2" />

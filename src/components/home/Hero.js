@@ -116,7 +116,7 @@ export default function Hero() {
       </div>
 
       {/* Hero Content */}
-      <div className="relative z-10 w-full max-w-5xl px-4 flex flex-col items-center">
+      <div className="relative z-10 w-full max-w-7xl px-6 lg:px-16 flex flex-col items-center">
         {/* Promotional Banner */}
         <div className="mb-6 text-white text-sm md:text-base font-medium text-center animate-pulse">
            The Marq presents well-designed 3 and 4 BHK premium residences...

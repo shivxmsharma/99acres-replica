@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { MapPin, Home, Maximize2, ShieldCheck, ChevronLeft, ChevronRight, User, CheckCircle2, Heart, ArrowRightLeft, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCompare } from "@/context/CompareContext";
@@ -13,16 +14,17 @@ export default function PropertyCard({ property }) {
   const { isShortlisted, toggleShortlist } = useShortlist();
   const [imgIndex, setImgIndex] = useState(0);
   const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
+  const router = useRouter();
 
   const {
     _id,
     title,
     price,
     priceLabel,
-    location,
-    features,
+    address = {},
+    details = {},
     images = [],
-    owner,
+    owner = {},
     isVerified,
     constructionStatus
   } = property;
@@ -41,8 +43,10 @@ export default function PropertyCard({ property }) {
 
   return (
     <div className="relative group block h-full">
-      <Link href={`/property/${_id}`} className="block h-full">
-        <div className="bg-white rounded-[40px] overflow-hidden shadow-sm border border-gray-100 hover:shadow-2xl hover:shadow-primary/5 transition-all duration-500 flex flex-col h-full relative">
+      <div 
+        onClick={() => router.push(`/property/${_id}`)}
+        className="cursor-pointer bg-white rounded-[40px] overflow-hidden shadow-sm border border-gray-100 hover:shadow-2xl hover:shadow-primary/5 transition-all duration-500 flex flex-col h-full relative"
+      >
           
           {/* Image Section with Slider */}
           <div className="relative h-64 w-full overflow-hidden">
@@ -107,7 +111,7 @@ export default function PropertyCard({ property }) {
                 <span className="text-xs font-black text-primary uppercase tracking-widest">{priceLabel}</span>
               </div>
               <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
-                ₹{Math.round((price * 100000) / (features.sqft || 1000))} / sqft
+                ₹{Math.round((price * 100000) / (details.area || 1000))} / sqft
               </div>
             </div>
 
@@ -117,7 +121,7 @@ export default function PropertyCard({ property }) {
 
             <div className="flex items-center gap-2 text-gray-500 font-medium mb-6">
               <MapPin size={16} className="flex-shrink-0 text-primary" />
-              <span className="truncate text-sm">{location.area}, {location.city}</span>
+              <span className="truncate text-sm">{address.locality}, {address.city}</span>
             </div>
 
             {/* Features Row */}
@@ -128,7 +132,7 @@ export default function PropertyCard({ property }) {
                 </div>
                 <div>
                   <p className="text-[10px] font-black text-gray-400 uppercase leading-none mb-1">Config</p>
-                  <p className="text-sm font-black text-gray-900">{features.bhk} BHK</p>
+                  <p className="text-sm font-black text-gray-900">{details.bedrooms} BHK</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
@@ -137,7 +141,7 @@ export default function PropertyCard({ property }) {
                 </div>
                 <div>
                   <p className="text-[10px] font-black text-gray-400 uppercase leading-none mb-1">Area</p>
-                  <p className="text-sm font-black text-gray-900">{features.sqft} sqft</p>
+                  <p className="text-sm font-black text-gray-900">{details.area} sqft</p>
                 </div>
               </div>
             </div>
@@ -171,9 +175,8 @@ export default function PropertyCard({ property }) {
             </div>
           </div>
         </div>
-      </Link>
 
-      <QuickViewModal 
+        <QuickViewModal 
         property={property} 
         isOpen={isQuickViewOpen} 
         onClose={() => setIsQuickViewOpen(false)} 

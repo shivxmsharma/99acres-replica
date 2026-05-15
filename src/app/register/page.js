@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { User, Mail, Lock, ArrowRight, Loader2, AlertCircle, CheckCircle2, UserCircle, ChevronDown } from "lucide-react";
+import { User, Mail, Lock, ArrowRight, Loader2, AlertCircle, CheckCircle2, UserCircle, ChevronDown, Eye, EyeOff } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function RegisterPage() {
@@ -15,6 +15,7 @@ export default function RegisterPage() {
   });
   const [errors, setErrors] = useState({});
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
@@ -140,15 +141,22 @@ export default function RegisterPage() {
                   <div className="relative group">
                     <Lock className={`absolute left-5 top-1/2 -translate-y-1/2 transition-colors ${errors.password ? 'text-red-400' : 'text-gray-400 group-focus-within:text-primary'}`} size={20} />
                     <input 
-                      type="password" 
+                      type={showPassword ? "text" : "password"} 
                       placeholder="••••••••"
-                      className={`w-full pl-14 pr-6 py-4 bg-gray-50 border rounded-2xl focus:outline-none focus:bg-white font-bold text-gray-900 transition-all ${errors.password ? 'border-red-200 focus:border-red-500' : 'border-gray-100 focus:border-primary'}`}
+                      className={`w-full pl-14 pr-14 py-4 bg-gray-50 border rounded-2xl focus:outline-none focus:bg-white font-bold text-gray-900 transition-all ${errors.password ? 'border-red-200 focus:border-red-500' : 'border-gray-100 focus:border-primary'}`}
                       value={formData.password}
                       onChange={(e) => {
                         setFormData({ ...formData, password: e.target.value });
                         if (errors.password) setErrors({ ...errors, password: null });
                       }}
                     />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-primary transition-colors"
+                    >
+                      {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                    </button>
                   </div>
                   {errors.password && <p className="text-[10px] font-bold text-red-500 ml-1 uppercase tracking-wider">{errors.password}</p>}
                 </div>

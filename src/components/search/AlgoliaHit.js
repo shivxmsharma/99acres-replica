@@ -19,9 +19,8 @@ export default function AlgoliaHit({ hit }) {
     _id: hit.objectID,
     ...hit,
     images: hit.images || [hit.coverPhoto],
-    location: { area: hit.area, city: hit.city },
-    features: { bhk: hit.bhk, sqft: hit.sqft },
-    details: { bedrooms: hit.bhk, sqft: hit.sqft },
+    address: { locality: hit.locality, city: hit.city },
+    details: { bedrooms: hit.bhk, area: hit.sqft },
     owner: { name: hit.ownerName || 'Agent', role: hit.ownerType || 'Agent' }
   };
 
@@ -62,7 +61,7 @@ export default function AlgoliaHit({ hit }) {
 
             <div className="flex items-center gap-1.5 text-gray-400 font-bold text-[11px] uppercase tracking-widest mb-6">
               <MapPin size={14} className="text-[#0041C2]" />
-              <span className="truncate">{hit.area}, {hit.city}</span>
+              <span className="truncate">{hit.locality}, {hit.city}</span>
             </div>
 
             <div className="flex items-center justify-between py-6 border-y border-gray-50 mt-auto">

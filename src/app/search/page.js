@@ -46,7 +46,7 @@ function MapView() {
             <div className="min-w-0 py-1">
               <h4 className="font-black text-gray-900 text-sm truncate uppercase tracking-tighter group-hover:text-[#0041C2]">{hit.title}</h4>
               <p className="text-[10px] text-gray-400 font-bold mt-1 flex items-center gap-1 uppercase">
-                <MapPin size={10} className="text-[#0041C2]" /> {hit.area}
+                <MapPin size={10} className="text-[#0041C2]" /> {hit.locality}
               </p>
               <p className="text-[#0041C2] font-black text-lg mt-2 tracking-tighter">₹{hit.price?.toLocaleString('en-IN')}</p>
             </div>

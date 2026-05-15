@@ -21,10 +21,11 @@ import ContactActions from "@/components/property/ContactActions";
 import PropertyAiInsights from "@/components/ai/PropertyAiInsights";
 import PropertyTrustBadge from "@/components/property/PropertyTrustBadge";
 import PropertyReviews from "@/components/property/PropertyReviews";
+import PropertyActionBar from "@/components/property/PropertyActionBar";
 
 async function getProperty(id) {
   await dbConnect();
-  const property = await Property.findById(id).lean();
+  const property = await Property.findById(id).populate("owner").lean();
   if (property) {
     // Ensure the object is plain and serializable for Client Components
     return JSON.parse(JSON.stringify(property));
@@ -41,18 +42,19 @@ export default async function PropertyDetailsPage({ params }) {
   }
 
   const {
-    title,
-    price,
-    priceLabel,
-    location,
-    features,
-    images,
-    owner,
-    isVerified,
-    description,
-    amenities,
-    type,
-    status
+    title = "Property",
+    price = 0,
+    priceLabel = "Cr",
+    address = {},
+    details = {},
+    images = [],
+    owner = {},
+    isVerified = false,
+    description = "",
+    amenities = [],
+    propertyType = "Apartment",
+    listingType = "Buy",
+    status = "active"
   } = property;
 
   return (
@@ -61,8 +63,8 @@ export default async function PropertyDetailsPage({ params }) {
       <div className="border-b border-gray-100 bg-gray-50/50 py-3">
         <div className="max-w-7xl mx-auto px-4 flex items-center gap-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
           <span>Home</span> <ChevronRight size={12} />
-          <span>{location.city}</span> <ChevronRight size={12} />
-          <span>{location.area}</span> <ChevronRight size={12} />
+          <span>{address.city}</span> <ChevronRight size={12} />
+          <span>{address.locality}</span> <ChevronRight size={12} />
           <span className="text-gray-900 truncate max-w-[200px]">{title}</span>
         </div>
       </div>
@@ -84,7 +86,7 @@ export default async function PropertyDetailsPage({ params }) {
                       </span>
                     )}
                     <span className="bg-blue-50 text-primary text-[10px] font-black px-2 py-1 rounded">
-                      {type.toUpperCase()} FOR {status.toUpperCase()}
+                      {propertyType.toUpperCase()} FOR {listingType.toUpperCase()}
                     </span>
                   </div>
                   <h1 className="text-3xl font-black text-gray-900 tracking-tight leading-tight">
@@ -92,28 +94,18 @@ export default async function PropertyDetailsPage({ params }) {
                   </h1>
                   <div className="flex items-center gap-2 text-gray-500 font-medium">
                     <MapPin size={18} className="text-primary" />
-                    {location.address}, {location.area}, {location.city}
+                    {address.locality}, {address.city}, {address.state}
                   </div>
                 </div>
                 
                 <div className="text-right">
                   <div className="text-4xl font-black text-gray-900">₹{price}<span className="text-xl uppercase ml-1">{priceLabel}</span></div>
-                  <div className="text-sm font-bold text-gray-400 uppercase mt-1">₹{Math.round((price * 10000000) / features.sqft)} per sqft</div>
+                  <div className="text-sm font-bold text-gray-400 uppercase mt-1">₹{Math.round((price * 100000) / (details.area || 1000))} per sqft</div>
                 </div>
               </div>
 
               {/* Action Bar */}
-              <div className="flex items-center gap-4 py-4 border-y border-gray-100 mt-4">
-                <button className="flex items-center gap-2 text-sm font-bold text-gray-600 hover:text-primary transition-colors">
-                  <Share2 size={18} /> Share
-                </button>
-                <button className="flex items-center gap-2 text-sm font-bold text-gray-600 hover:text-red-500 transition-colors">
-                  <Heart size={18} /> Shortlist
-                </button>
-                <button className="flex items-center gap-2 text-sm font-bold text-gray-600 hover:text-primary transition-colors">
-                  <Info size={18} /> Report
-                </button>
-              </div>
+              <PropertyActionBar property={property} />
             </div>
 
             {/* Gallery Section */}
@@ -141,25 +133,25 @@ export default async function PropertyDetailsPage({ params }) {
               <div className="flex flex-col gap-1">
                 <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Config</span>
                 <div className="flex items-center gap-2 font-black text-gray-900">
-                  <Bed className="text-primary" size={20} /> {features.bhk} BHK
+                  <Bed className="text-primary" size={20} /> {details.bedrooms} BHK
                 </div>
               </div>
               <div className="flex flex-col gap-1">
                 <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Bathrooms</span>
                 <div className="flex items-center gap-2 font-black text-gray-900">
-                  <Bath className="text-primary" size={20} /> {features.bathrooms} Baths
+                  <Bath className="text-primary" size={20} /> {details.bathrooms} Baths
                 </div>
               </div>
               <div className="flex flex-col gap-1">
                 <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Area</span>
                 <div className="flex items-center gap-2 font-black text-gray-900">
-                  <Maximize2 className="text-primary" size={20} /> {features.sqft} sqft
+                  <Maximize2 className="text-primary" size={20} /> {details.area} sqft
                 </div>
               </div>
               <div className="flex flex-col gap-1">
                 <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Furnishing</span>
                 <div className="flex items-center gap-2 font-black text-gray-900">
-                  <Home className="text-primary" size={20} /> {features.furnishing}
+                  <Home className="text-primary" size={20} /> {details.furnishing}
                 </div>
               </div>
             </div>
@@ -199,11 +191,11 @@ export default async function PropertyDetailsPage({ params }) {
               <div className="bg-white text-gray-900 rounded-[40px] p-8 shadow-2xl shadow-gray-100 border border-gray-100">
                 <div className="flex items-center gap-4 mb-8 pb-8 border-b border-gray-100">
                   <div className="w-16 h-16 bg-primary text-white rounded-full flex items-center justify-center text-2xl font-black">
-                    {owner.name[0]}
+                    {owner?.name?.[0]?.toUpperCase() || 'O'}
                   </div>
                   <div>
-                    <div className="text-[10px] font-black text-primary uppercase tracking-widest mb-1">{owner.type}</div>
-                    <div className="text-xl font-bold text-gray-900">{owner.name}</div>
+                    <div className="text-[10px] font-black text-primary uppercase tracking-widest mb-1">{owner?.role || 'Owner'}</div>
+                    <div className="text-xl font-bold text-gray-900">{owner?.name || 'User'}</div>
                   </div>
                 </div>
 

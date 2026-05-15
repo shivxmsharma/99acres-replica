@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 export default function SafeImage({
   src,
   alt,
-  fallbackSrc = "/images/property-placeholder.jpg",
+  fallbackSrc = "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=800",
   className,
   ...props
 }) {
@@ -21,7 +21,9 @@ export default function SafeImage({
       {...props}
       src={imgSrc}
       alt={alt || "Image"}
-      className={className}
+      className={`${className} object-cover`}
+      fill={!props.width && !props.height}
+      sizes={props.sizes || "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"}
       onError={() => {
         setImgSrc(fallbackSrc);
       }}

@@ -132,7 +132,7 @@ const PropertySchema = new mongoose.Schema(
 
     status: {
       type: String,
-      enum: ["active", "inactive", "sold", "rented", "pending-review"],
+      enum: ["active", "inactive", "sold", "rented", "pending-review", "deleted"],
       default: "active",
     },
     isFeatured: {

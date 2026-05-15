@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Search, Menu, User, Bell, ChevronDown, Plus, Heart } from "lucide-react";
 import { useSession, signIn, signOut } from "next-auth/react";
+import NotificationDropdown from "./NotificationDropdown";
 
 const NAV_LINKS = [
   { 
@@ -52,7 +53,7 @@ export default function Navbar() {
 
   return (
     <nav className="bg-primary text-white sticky top-0 z-50 shadow-md">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-full mx-auto px-4 sm:px-10 lg:px-16">
         <div className="flex items-center justify-between h-16">
           
           {/* Logo */}
@@ -88,10 +89,7 @@ export default function Navbar() {
             </Link>
             
             <div className="flex items-center gap-3">
-              <button className="p-2 hover:bg-blue-700 rounded-full transition-colors relative">
-                <Bell size={20} />
-                <span className="absolute top-1 right-1 w-2 h-2 bg-secondary rounded-full border-2 border-primary"></span>
-              </button>
+              <NotificationDropdown />
               <Link href="/shortlist" className="p-2 hover:bg-blue-700 rounded-full transition-colors relative" title="Shortlist">
                 <Heart size={20} />
               </Link>
@@ -113,8 +111,13 @@ export default function Navbar() {
                         <p className="text-sm font-black text-gray-900 truncate leading-tight">{session.user.name}</p>
                       </div>
                       <Link href="/dashboard" className="block px-4 py-2.5 text-xs font-bold text-gray-600 hover:text-primary hover:bg-blue-50 transition-all">
-                        Dashboard
+                        My Dashboard
                       </Link>
+                      {session.user.role === 'Admin' && (
+                        <Link href="/admin" className="block px-4 py-2.5 text-xs font-bold text-gray-600 hover:text-primary hover:bg-blue-50 transition-all">
+                          Admin Panel
+                        </Link>
+                      )}
                       <Link href="/shortlist" className="block px-4 py-2.5 text-xs font-bold text-gray-600 hover:text-primary hover:bg-blue-50 transition-all">
                         My Shortlist
                       </Link>

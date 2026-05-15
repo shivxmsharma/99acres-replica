@@ -23,6 +23,22 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Global Clickable Elements Cursor */
+button, 
+a, 
+input[type="button"], 
+input[type="submit"], 
+input[type="reset"],
+[role="button"] {
+  cursor: pointer;
+}
+
+/* Ensure disabled buttons don't show pointer */
+button:disabled,
+[role="button"]:disabled {
+  cursor: default;
+}
+
 /* ── 99acres Style Utilities ── */
 
 .btn-primary {

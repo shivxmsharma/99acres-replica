@@ -6,21 +6,21 @@ const FOOTER_SECTIONS = [
   {
     title: "Real Estate in India",
     links: [
-      { label: "Property in Delhi", href: "/search" },
-      { label: "Property in Mumbai", href: "/search" },
-      { label: "Property in Bangalore", href: "/search" },
-      { label: "Property in Pune", href: "/search" },
-      { label: "Property in Gurgaon", href: "/search" }
+      { label: "Property in Delhi", href: "/search?city=Delhi" },
+      { label: "Property in Mumbai", href: "/search?city=Mumbai" },
+      { label: "Property in Bangalore", href: "/search?city=Bangalore" },
+      { label: "Property in Pune", href: "/search?city=Pune" },
+      { label: "Property in Gurgaon", href: "/search?city=Gurgaon" }
     ],
   },
   {
     title: "New Projects in India",
     links: [
-      { label: "New Projects in Noida", href: "/search" },
-      { label: "New Projects in Kolkata", href: "/search" },
-      { label: "New Projects in Hyderabad", href: "/search" },
-      { label: "New Projects in Ahmedabad", href: "/search" },
-      { label: "New Projects in Chandigarh", href: "/search" }
+      { label: "New Projects in Noida", href: "/search?city=Noida" },
+      { label: "New Projects in Kolkata", href: "/search?city=Kolkata" },
+      { label: "New Projects in Hyderabad", href: "/search?city=Hyderabad" },
+      { label: "New Projects in Ahmedabad", href: "/search?city=Ahmedabad" },
+      { label: "New Projects in Chandigarh", href: "/search?city=Chandigarh" }
     ],
   },
   {
@@ -31,17 +31,17 @@ const FOOTER_SECTIONS = [
       { label: "Property Valuation", href: "/tools/valuation" },
       { label: "Compare Properties", href: "/compare" },
       { label: "Shortlisted Properties", href: "/shortlist" },
-      { label: "Legal Services", href: "#" }
+      { label: "Post Property Free", href: "/post-property" }
     ],
   },
   {
     title: "Company",
     links: [
-      { label: "About Us", href: "#" },
-      { label: "Contact Us", href: "#" },
-      { label: "Careers", href: "#" },
-      { label: "Terms & Conditions", href: "#" },
-      { label: "Privacy Policy", href: "#" }
+      { label: "About Us", href: "/about" },
+      { label: "Contact Us", href: "/contact" },
+      { label: "Careers", href: "/contact" },
+      { label: "Terms & Conditions", href: "/terms" },
+      { label: "Privacy Policy", href: "/privacy" }
     ],
   },
 ];
@@ -49,7 +49,7 @@ const FOOTER_SECTIONS = [
 export default function Footer() {
   return (
     <footer className="bg-[#091E42] text-white pt-16 pb-8 border-t border-white/10">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-full mx-auto px-4 sm:px-10 lg:px-16">
         
         {/* Main Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
@@ -84,9 +84,15 @@ export default function Footer() {
 
           {/* Social Icons */}
           <div className="flex items-center gap-4">
-            {[Facebook, Twitter, Instagram, Linkedin, Youtube].map((Icon, i) => (
-              <Link key={i} href="#" className="p-2 bg-white/5 hover:bg-white/10 rounded-full transition-colors">
-                <Icon size={18} />
+            {[
+              { Icon: Facebook, href: "https://facebook.com/99acres" },
+              { Icon: Twitter, href: "https://twitter.com/99acresIndia" },
+              { Icon: Instagram, href: "https://instagram.com/99acresindia" },
+              { Icon: Linkedin, href: "https://linkedin.com/company/99acres-com" },
+              { Icon: Youtube, href: "https://youtube.com/user/99acres" }
+            ].map((social, i) => (
+              <Link key={i} href={social.href} target="_blank" className="p-2 bg-white/5 hover:bg-white/10 rounded-full transition-colors">
+                <social.Icon size={18} />
               </Link>
             ))}
           </div>
