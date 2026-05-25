@@ -17,6 +17,8 @@ import AlgoliaSearchFilters from "@/components/search/AlgoliaSearchFilters";
 import { Search as SearchIcon, Map as MapIcon, Grid3X3, Loader2, MapPin } from "lucide-react";
 import Link from "next/link";
 import SafeImage from "@/components/common/SafeImage";
+import { useSearchParams } from "next/navigation";
+
 
 const PropertyMap = dynamic(() => import("@/components/map/PropertyMap"), {
   ssr: false,
@@ -102,16 +104,52 @@ function EmptyState() {
   return null;
 }
 
-export default function SearchPage() {
+function SearchContent() {
+  const searchParams = useSearchParams();
+  const queryParam = searchParams.get("q") || "";
+  const statusParam = searchParams.get("status") || "";
+  const typeParam = searchParams.get("type") || "";
+  const featuredParam = searchParams.get("featured") || "";
+
+  const initialUiState = useMemo(() => {
+    const state = {};
+    if (queryParam) {
+      state.query = queryParam;
+    }
+    if (typeParam) {
+      state.refinementList = {
+        type: [typeParam]
+      };
+    }
+    return {
+      "99acres_properties": state
+    };
+  }, [queryParam, typeParam]);
+
+  const filters = useMemo(() => {
+    const parts = [];
+    if (statusParam) {
+      parts.push(`listingType:${statusParam}`);
+    }
+    if (featuredParam === "true") {
+      parts.push("isFeatured:true");
+    }
+    return parts.length > 0 ? parts.join(" AND ") : undefined;
+  }, [statusParam, featuredParam]);
+
   const [viewMode, setViewMode] = useState("grid");
 
   return (
     <InstantSearch 
       searchClient={searchClient} 
       indexName="99acres_properties"
+      initialUiState={initialUiState}
       future={{ preserveSharedStateOnUnmount: true }}
     >
-      <Configure hitsPerPage={viewMode === 'map' ? 50 : 12} />
+      <Configure 
+        hitsPerPage={viewMode === 'map' ? 50 : 12} 
+        filters={filters}
+      />
       
       <div className="flex flex-col min-h-screen bg-gray-50/30">
         <main className="flex-grow pt-8 pb-16">
@@ -239,5 +277,17 @@ export default function SearchPage() {
         }
       `}</style>
     </InstantSearch>
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Loader2 className="w-10 h-10 animate-spin text-[#0041C2]" />
+      </div>
+    }>
+      <SearchContent />
+    </Suspense>
   );
 }

@@ -73,7 +73,7 @@ const CORE_PROPERTIES = [
     address: { locality: "Golf Course Road", city: "Gurgaon", state: "Haryana" },
     details: { bedrooms: 4, bathrooms: 5, area: 5400, furnishing: "Fully Furnished", constructionStatus: "Ready to Move" },
     amenities: ["Private Pool", "Home Theatre", "Gym", "Concierge", "4 Car Parking"],
-    images: ["https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=1200"],
+    images: ["https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=1200"],
     isFeatured: true,
     isVerified: true,
     trustScore: 98,
@@ -91,7 +91,7 @@ const CORE_PROPERTIES = [
     address: { locality: "HSR Layout", city: "Bangalore", state: "Karnataka" },
     details: { bedrooms: 3, bathrooms: 3, area: 1850, furnishing: "Semi-Furnished", constructionStatus: "Ready to Move" },
     amenities: ["Lift", "Power Backup", "Clubhouse", "Security"],
-    images: ["https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&q=80&w=1200"],
+    images: ["https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&q=80&w=1200"],
     isFeatured: false,
     isVerified: true,
     trustScore: 82,
@@ -109,7 +109,7 @@ const CORE_PROPERTIES = [
     address: { locality: "Juhu", city: "Mumbai", state: "Maharashtra" },
     details: { bedrooms: 6, bathrooms: 7, area: 8500, furnishing: "Fully Furnished", constructionStatus: "Ready to Move" },
     amenities: ["Sea View", "Private Lift", "Terrace Garden", "Smart Home", "Staff Quarters"],
-    images: ["https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&q=80&w=1200"],
+    images: ["https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&q=80&w=1200"],
     isFeatured: true,
     isVerified: true,
     trustScore: 99,
@@ -122,11 +122,10 @@ const CORE_PROPERTIES = [
 const PROP_TYPES = ["Apartment", "Villa", "Penthouse", "Studio", "Independent House", "Builder Floor"];
 const AMENITIES_POOL = ["Gym", "Pool", "Clubhouse", "Security", "Parking", "Power Backup", "Garden", "WiFi", "Lift"];
 const PHOTO_POOL = [
-  "1512917774080-9991f1c4c750", "1545324418-cc1a3fa10c00", "1613977257363-707ba9348227",
-  "1600585154340-be6161a56a0c", "1564013463113-d3dfbb3b2464", "1613490493576-7fde63acd811",
-  "1512918766752-1250f1419794", "1580587767376-042a4b9ae275", "1600566752355-3979c5813476",
-  "1600047509807-ba5f99d616ee", "1600210492486-724fe5c67fb0", "1600585152223-144a4f786044",
-  "1600610398894-7bd147424090", "1600573472591-ee6b68d14c68", "1600585154527-334643f9024c"
+  "1600585154340-be6161a56a0c", "1605276374104-dee2a0ed3cd6", "1580587767376-042a4b9ae275",
+  "1512917774080-9991f1c4c750", "1613490493576-7fde63acd811", "1564013463113-d3dfbb3b2464",
+  "1513694203232-719a280e022f", "1484154218962-a197022b5858", "1502672260266-1c1ef2d93688",
+  "1522708323590-d24dbb6b0267", "1613977257363-707ba9348227", "1600566752355-3979c5813476"
 ];
 
 function generateExtraProperties(ownerIds, count = 27) {

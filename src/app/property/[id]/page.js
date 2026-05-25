@@ -22,6 +22,7 @@ import PropertyAiInsights from "@/components/ai/PropertyAiInsights";
 import PropertyTrustBadge from "@/components/property/PropertyTrustBadge";
 import PropertyReviews from "@/components/property/PropertyReviews";
 import PropertyActionBar from "@/components/property/PropertyActionBar";
+import SafeImage from "@/components/common/SafeImage";
 
 async function getProperty(id) {
   await dbConnect();
@@ -31,6 +32,30 @@ async function getProperty(id) {
     return JSON.parse(JSON.stringify(property));
   }
   return null;
+}
+
+export async function generateMetadata({ params }) {
+  const { id } = await params;
+  const property = await getProperty(id);
+  
+  if (!property) {
+    return {
+      title: "Property Not Found | 99acres Replica",
+    };
+  }
+
+  const locality = property.address?.locality || "";
+  const city = property.address?.city || "";
+  
+  return {
+    title: `${property.title} | 99acres Replica`,
+    description: `${property.propertyType} for ${property.listingType} in ${locality}, ${city}. Config: ${property.details?.bedrooms} BHK. Area: ${property.details?.area} sqft. Verified and listed.`,
+    openGraph: {
+      title: property.title,
+      description: property.description?.slice(0, 160),
+      images: property.images?.[0] ? [property.images[0]] : [],
+    }
+  };
 }
 
 export default async function PropertyDetailsPage({ params }) {
@@ -111,17 +136,25 @@ export default async function PropertyDetailsPage({ params }) {
             {/* Gallery Section */}
             <div className="grid grid-cols-4 grid-rows-2 gap-4 h-[500px]">
               <div className="col-span-3 row-span-2 rounded-3xl overflow-hidden relative group">
-                <img 
+                <SafeImage 
                   src={images[0] || "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=1000"} 
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                   alt="Main view"
                 />
               </div>
-              <div className="rounded-3xl overflow-hidden">
-                <img src={images[1] || images[0]} className="w-full h-full object-cover" alt="View 2" />
+              <div className="rounded-3xl overflow-hidden relative">
+                <SafeImage 
+                  src={images[1] || images[0]} 
+                  className="w-full h-full object-cover" 
+                  alt="View 2" 
+                />
               </div>
               <div className="rounded-3xl overflow-hidden relative">
-                <img src={images[2] || images[0]} className="w-full h-full object-cover" alt="View 3" />
+                <SafeImage 
+                  src={images[2] || images[0]} 
+                  className="w-full h-full object-cover" 
+                  alt="View 3" 
+                />
                 <div className="absolute inset-0 bg-black/60 flex items-center justify-center text-white font-bold cursor-pointer hover:bg-black/40 transition-colors">
                   +12 Photos
                 </div>

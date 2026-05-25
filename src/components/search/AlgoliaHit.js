@@ -93,7 +93,7 @@ export default function AlgoliaHit({ hit }) {
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            toggleShortlist(hit);
+            toggleShortlist(property);
           }}
           className={`p-3 backdrop-blur-md rounded-full shadow-sm transition-all group/heart ${
             isShortlisted(hit.objectID) 
@@ -112,7 +112,7 @@ export default function AlgoliaHit({ hit }) {
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            addToCompare(hit);
+            addToCompare(property);
           }}
           className="p-3 bg-white/90 backdrop-blur-md rounded-full shadow-sm hover:bg-[#0041C2] hover:text-white transition-all group/compare"
           title="Compare Property"

@@ -18,19 +18,19 @@ export async function GET(request) {
     // For now, we extract from the Property data
     const properties = await Property.find({
       $or: [
-        { "location.city": { $regex: q, $options: "i" } },
-        { "location.area": { $regex: q, $options: "i" } }
+        { "address.city": { $regex: q, $options: "i" } },
+        { "address.locality": { $regex: q, $options: "i" } }
       ]
-    }).limit(20).select("location");
+    }).limit(20).select("address");
 
     // Extract unique cities and areas
     const suggestions = new Set();
     properties.forEach(p => {
-      if (p.location.city.toLowerCase().includes(q.toLowerCase())) {
-        suggestions.add(`${p.location.city} (City)`);
+      if (p.address?.city && p.address.city.toLowerCase().includes(q.toLowerCase())) {
+        suggestions.add(`${p.address.city} (City)`);
       }
-      if (p.location.area.toLowerCase().includes(q.toLowerCase())) {
-        suggestions.add(`${p.location.area}, ${p.location.city}`);
+      if (p.address?.locality && p.address.locality.toLowerCase().includes(q.toLowerCase())) {
+        suggestions.add(`${p.address.locality}, ${p.address.city}`);
       }
     });
 

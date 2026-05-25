@@ -24,7 +24,8 @@ export function CompareProvider({ children }) {
       toast.error("You can compare up to 4 properties at a time.");
       return;
     }
-    if (compareList.find((p) => p._id === property._id)) {
+    const propertyId = property._id || property.objectID;
+    if (compareList.find((p) => (p._id || p.objectID) === propertyId)) {
       toast.error("Property already in comparison list.");
       return;
     }
@@ -35,7 +36,7 @@ export function CompareProvider({ children }) {
   };
 
   const removeFromCompare = (id) => {
-    const newList = compareList.filter((p) => p._id !== id);
+    const newList = compareList.filter((p) => (p._id || p.objectID) !== id);
     setCompareList(newList);
     localStorage.setItem("compareList", JSON.stringify(newList));
   };

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Search, MapPin, Mic, ChevronDown, Clock } from "lucide-react";
+import { Search, MapPin, Mic, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const TABS = [
@@ -35,16 +35,11 @@ export default function Hero() {
   // Auto-suggest state
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [recentSearches, setRecentSearches] = useState([]);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setPlaceholderIndex((prev) => (prev + 1) % PLACEHOLDERS.length);
     }, 3000);
-    
-    // Load recent searches
-    const saved = localStorage.getItem("recentSearches");
-    if (saved) setRecentSearches(JSON.parse(saved));
 
     return () => clearInterval(interval);
   }, []);
@@ -68,15 +63,13 @@ export default function Hero() {
     return () => clearTimeout(timeoutId);
   }, [searchQuery]);
 
-  const handleSearch = (query = searchQuery) => {
+  const handleSearch = (query) => {
+    const actualQuery = typeof query === "string" ? query : searchQuery;
     const params = new URLSearchParams();
-    const cleanQuery = query.split(' (')[0];
+    const cleanQuery = actualQuery.split(' (')[0];
     
     if (cleanQuery) {
       params.set("q", cleanQuery);
-      const updated = [cleanQuery, ...recentSearches.filter(s => s !== cleanQuery)].slice(0, 5);
-      setRecentSearches(updated);
-      localStorage.setItem("recentSearches", JSON.stringify(updated));
     }
     
     // Status & Type Mapping based on Active Tab
@@ -118,14 +111,24 @@ export default function Hero() {
       {/* Hero Content */}
       <div className="relative z-10 w-full max-w-7xl px-6 lg:px-16 flex flex-col items-center">
         {/* Promotional Banner */}
-        <div className="mb-6 text-white text-sm md:text-base font-medium text-center animate-pulse">
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="mb-6 text-white text-sm md:text-base font-medium text-center bg-black/40 backdrop-blur-md px-6 py-2 rounded-full border border-white/20"
+        >
            The Marq presents well-designed 3 and 4 BHK premium residences...
-        </div>
+        </motion.div>
 
         {/* Search Container */}
-        <div className="w-full bg-white rounded-xl shadow-2xl overflow-hidden p-1 md:p-2">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
+          className="w-full bg-white/90 backdrop-blur-xl rounded-2xl shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] border border-white/50 p-2 md:p-3"
+        >
           {/* Tabs */}
-          <div className="flex items-center overflow-x-auto no-scrollbar border-b border-gray-100">
+          <div className="flex items-center overflow-x-auto no-scrollbar gap-2 mb-3 px-2 pt-2">
             {TABS.map((tab) => (
               <button
                 key={tab.id}
@@ -136,22 +139,23 @@ export default function Hero() {
                   }
                   setActiveTab(tab.id);
                 }}
-                className={`relative px-4 py-4 text-sm font-semibold transition-all whitespace-nowrap flex items-center gap-1.5 ${
-                  activeTab === tab.id ? "text-primary" : "text-gray-500 hover:text-gray-800"
+                className={`relative px-5 py-2.5 text-sm font-semibold transition-all whitespace-nowrap flex items-center gap-1.5 rounded-full z-10 ${
+                  activeTab === tab.id ? "text-white" : "text-gray-600 hover:text-gray-900 hover:bg-gray-100/50"
                 }`}
               >
-                {tab.label}
-                {tab.hasDot && <span className="w-1.5 h-1.5 bg-red-500 rounded-full"></span>}
-                {tab.badge && (
-                  <span className={`${tab.badgeColor} text-white text-[8px] px-1 rounded font-bold ml-1`}>
-                    {tab.badge}
-                  </span>
-                )}
                 {activeTab === tab.id && (
                   <motion.div
-                    layoutId="activeTab"
-                    className="absolute bottom-0 left-0 right-0 h-1 bg-primary"
+                    layoutId="activeTabHero"
+                    className="absolute inset-0 bg-primary rounded-full -z-10 shadow-md shadow-primary/30"
+                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                   />
+                )}
+                {tab.label}
+                {tab.hasDot && <span className={`w-1.5 h-1.5 rounded-full ${activeTab === tab.id ? 'bg-white' : 'bg-red-500'}`}></span>}
+                {tab.badge && (
+                  <span className={`${tab.badgeColor} text-white text-[8px] px-1.5 py-0.5 rounded font-black ml-1 shadow-sm`}>
+                    {tab.badge}
+                  </span>
                 )}
               </button>
             ))}
@@ -216,21 +220,14 @@ export default function Hero() {
 
               {/* Suggestions Dropdown */}
               <AnimatePresence>
-                {showSuggestions && (searchQuery.length > 0 || recentSearches.length > 0) && (
+                {showSuggestions && searchQuery.length >= 2 && (
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 10 }}
                     className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-2xl z-[60] border border-gray-100 overflow-hidden"
                   >
-                    {searchQuery.length === 0 && recentSearches.length > 0 && (
-                      <div className="p-4 bg-gray-50/50 border-b border-gray-100 flex items-center gap-2">
-                        <Clock className="text-gray-400" size={14} />
-                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Recent Searches</span>
-                      </div>
-                    )}
-                    
-                    {(searchQuery.length === 0 ? recentSearches : suggestions).map((item, idx) => (
+                    {suggestions.map((item, idx) => (
                       <div
                         key={idx}
                         onClick={() => {
@@ -240,13 +237,13 @@ export default function Hero() {
                         className="px-6 py-4 flex items-center gap-4 hover:bg-primary/5 cursor-pointer transition-all border-b border-gray-50 last:border-0 group"
                       >
                         <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 group-hover:bg-primary/10 group-hover:text-primary transition-colors">
-                          {searchQuery.length === 0 ? <Clock size={16} /> : <MapPin size={16} />}
+                          <MapPin size={16} />
                         </div>
                         <span className="text-sm font-bold text-gray-700 group-hover:text-gray-900">{item}</span>
                       </div>
                     ))}
 
-                    {searchQuery.length > 0 && suggestions.length === 0 && (
+                    {suggestions.length === 0 && (
                       <div className="p-10 text-center">
                         <p className="text-xs font-bold text-gray-400 italic">No exact locations found for "{searchQuery}"</p>
                       </div>
@@ -258,23 +255,28 @@ export default function Hero() {
 
             {/* Search Button */}
             <button 
-              onClick={handleSearch}
+              onClick={() => handleSearch()}
               className="w-full md:w-auto bg-primary text-white font-black py-4 px-10 rounded-xl transition-all shadow-xl shadow-primary/20 hover:brightness-110 active:scale-95 uppercase tracking-widest text-xs"
             >
               Search
             </button>
           </div>
-        </div>
+        </motion.div>
 
         {/* Subtitle */}
-        <div className="mt-8 text-white text-center">
-          <h1 className="text-2xl md:text-3xl font-bold drop-shadow-md">
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1, delay: 0.6 }}
+          className="mt-12 text-center"
+        >
+          <h1 className="text-3xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-gray-300 drop-shadow-lg tracking-tight mb-3">
             India's No. 1 Property Portal
           </h1>
-          <p className="mt-2 text-sm md:text-lg text-gray-200 font-medium drop-shadow-sm">
+          <p className="text-sm md:text-xl text-gray-100 font-medium drop-shadow-md">
             Find Better Places to Live, Work and Wonder...
           </p>
-        </div>
+        </motion.div>
       </div>
     </div>
   );

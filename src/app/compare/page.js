@@ -35,6 +35,27 @@ export default function ComparePage() {
     { label: "Verified", key: "isVerified", type: "boolean", icon: ShieldCheck },
   ];
 
+  const getFeatureValue = (property, feature) => {
+    switch (feature.key) {
+      case "price":
+        return property.price;
+      case "type":
+        return property.type || property.propertyType;
+      case "bhk":
+        return property.bhk || property.details?.bedrooms;
+      case "sqft":
+        return property.sqft || property.details?.area;
+      case "city":
+        return property.city || property.address?.city;
+      case "area":
+        return property.area || property.locality || property.address?.locality;
+      case "isVerified":
+        return property.isVerified;
+      default:
+        return property[feature.key];
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 py-12">
       <div className="max-w-7xl mx-auto px-4">
@@ -54,22 +75,25 @@ export default function ComparePage() {
               <thead>
                 <tr>
                   <th className="p-8 w-64 bg-gray-50/50"></th>
-                  {compareList.map((property) => (
-                    <th key={property._id} className="p-8 min-w-[300px] align-top relative group">
-                      <button 
-                        onClick={() => removeFromCompare(property._id)}
-                        className="absolute top-4 right-4 p-2 bg-gray-50 text-gray-400 hover:text-red-500 rounded-full transition-all"
-                      >
-                        <X size={16} />
-                      </button>
-                      <div className="relative h-48 rounded-3xl overflow-hidden mb-6">
-                        <SafeImage src={property.coverPhoto} alt="" fill className="object-cover" />
-                      </div>
-                      <Link href={`/property/${property.objectID || property._id}`} className="text-lg font-black text-gray-900 hover:text-[#0041C2] line-clamp-2 leading-tight uppercase tracking-tighter">
-                        {property.title}
-                      </Link>
-                    </th>
-                  ))}
+                  {compareList.map((property) => {
+                    const propId = property._id || property.objectID;
+                    return (
+                      <th key={propId} className="p-8 min-w-[300px] align-top relative group">
+                        <button 
+                          onClick={() => removeFromCompare(propId)}
+                          className="absolute top-4 right-4 p-2 bg-gray-50 text-gray-400 hover:text-red-500 rounded-full transition-all"
+                        >
+                          <X size={16} />
+                        </button>
+                        <div className="relative h-48 rounded-3xl overflow-hidden mb-6">
+                          <SafeImage src={property.coverPhoto || property.images?.[0]} alt="" fill className="object-cover" />
+                        </div>
+                        <Link href={`/property/${property.objectID || property._id}`} className="text-lg font-black text-gray-900 hover:text-[#0041C2] line-clamp-2 leading-tight uppercase tracking-tighter">
+                          {property.title}
+                        </Link>
+                      </th>
+                    );
+                  })}
                 </tr>
               </thead>
               <tbody>
@@ -81,35 +105,42 @@ export default function ComparePage() {
                         <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{feature.label}</span>
                       </div>
                     </td>
-                    {compareList.map((property) => (
-                      <td key={property._id} className="p-8">
-                        {feature.type === "boolean" ? (
-                          property[feature.key] ? (
-                            <Check className="text-emerald-500" size={20} />
+                    {compareList.map((property) => {
+                      const propId = property._id || property.objectID;
+                      const val = getFeatureValue(property, feature);
+                      return (
+                        <td key={propId} className="p-8">
+                          {feature.type === "boolean" ? (
+                            val ? (
+                              <Check className="text-emerald-500" size={20} />
+                            ) : (
+                              <Minus className="text-gray-200" size={20} />
+                            )
                           ) : (
-                            <Minus className="text-gray-200" size={20} />
-                          )
-                        ) : (
-                          <span className="font-black text-gray-900">
-                            {feature.format ? feature.format(property[feature.key]) : property[feature.key]}
-                          </span>
-                        )}
-                      </td>
-                    ))}
+                            <span className="font-black text-gray-900">
+                              {feature.format ? feature.format(val) : val}
+                            </span>
+                          )}
+                        </td>
+                      );
+                    })}
                   </tr>
                 ))}
                 <tr>
                   <td className="p-8 bg-gray-50/50"></td>
-                  {compareList.map((property) => (
-                    <td key={property._id} className="p-8">
-                      <Link 
-                        href={`/property/${property.objectID || property._id}`}
-                        className="block text-center bg-blue-50 text-[#0041C2] px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-[#0041C2] hover:text-white transition-all shadow-sm"
-                      >
-                        View Details
-                      </Link>
-                    </td>
-                  ))}
+                  {compareList.map((property) => {
+                    const propId = property._id || property.objectID;
+                    return (
+                      <td key={propId} className="p-8">
+                        <Link 
+                          href={`/property/${property.objectID || property._id}`}
+                          className="block text-center bg-blue-50 text-[#0041C2] px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-[#0041C2] hover:text-white transition-all shadow-sm"
+                        >
+                          View Details
+                        </Link>
+                      </td>
+                    );
+                  })}
                 </tr>
               </tbody>
             </table>

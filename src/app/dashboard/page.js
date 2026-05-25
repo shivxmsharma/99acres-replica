@@ -350,6 +350,9 @@ export default function DashboardPage() {
                         <div className="w-48 relative overflow-hidden">
                           <img 
                             src={property.images[0]} 
+                            onError={(e) => {
+                              e.target.src = "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=800";
+                            }}
                             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
                             alt={property.title} 
                           />

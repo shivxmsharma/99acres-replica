@@ -48,10 +48,12 @@ function toAlgoliaRecord(property) {
       `${beds ? beds + " BHK " : ""}${property.propertyType} in ${locality}, ${city}`,
     listingType: property.listingType,
     propertyType: property.propertyType,
+    type: property.propertyType,
     price: property.price || 0,
     priceLabel: property.priceLabel,
     city,
     locality,
+    area: locality,
     state: property.address?.state || "",
     bhk: beds || 0,
     bathrooms: property.details?.bathrooms || 0,
@@ -92,6 +94,32 @@ async function syncToAlgolia() {
   await client.replaceAllObjects({
     indexName,
     objects: records,
+  });
+
+  console.log("Configuring Algolia index settings (searchable attributes, faceting, and ranking)...");
+  await client.setSettings({
+    indexName,
+    indexSettings: {
+      attributesForFaceting: [
+        "listingType",
+        "type",
+        "city",
+        "locality",
+        "bhk",
+        "price",
+        "isFeatured"
+      ],
+      searchableAttributes: [
+        "title",
+        "locality",
+        "city",
+        "propertyType"
+      ],
+      customRanking: [
+        "desc(isFeatured)",
+        "desc(trustScore)"
+      ]
+    }
   });
 
   console.log("Algolia sync complete. Updated", records.length, "objects.");

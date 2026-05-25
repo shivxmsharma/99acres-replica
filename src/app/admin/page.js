@@ -154,7 +154,14 @@ export default function AdminDashboard() {
                     <td className="px-8 py-5">
                       <div className="flex items-center gap-3">
                         <div className="w-12 h-12 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0">
-                          <img src={prop.images[0]} className="w-full h-full object-cover" alt="" />
+                          <img 
+                            src={prop.images[0]} 
+                            onError={(e) => {
+                              e.target.src = "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=800";
+                            }}
+                            className="w-full h-full object-cover" 
+                            alt="" 
+                          />
                         </div>
                         <div>
                           <p className="text-sm font-black text-gray-900 line-clamp-1">{prop.title}</p>

@@ -58,6 +58,9 @@ export default function PropertyCard({ property }) {
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.3 }}
                 src={images[imgIndex] || "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=1000"}
+                onError={(e) => {
+                  e.target.src = "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=1000";
+                }}
                 alt={title}
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
               />

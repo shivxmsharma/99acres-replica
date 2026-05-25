@@ -98,7 +98,14 @@ export default function Navbar() {
                   <>
                     <button className="p-1 hover:bg-blue-700 rounded-full transition-all flex items-center gap-2">
                       {session.user.image ? (
-                        <img src={session.user.image} className="w-8 h-8 rounded-full border-2 border-white/20 shadow-sm" alt="" />
+                        <img 
+                          src={session.user.image} 
+                          onError={(e) => {
+                            e.target.src = "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=100";
+                          }}
+                          className="w-8 h-8 rounded-full border-2 border-white/20 shadow-sm" 
+                          alt="" 
+                        />
                       ) : (
                         <div className="w-8 h-8 bg-blue-700 rounded-full flex items-center justify-center">
                           <User size={18} />

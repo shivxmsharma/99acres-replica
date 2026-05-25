@@ -118,6 +118,15 @@ export async function POST(request) {
     };
 
     const property = await Property.create(propertyData);
+
+    // Sync newly created property to Algolia in real-time
+    try {
+      const { syncPropertiesToAlgolia } = await import("@/lib/algolia");
+      await syncPropertiesToAlgolia(property);
+    } catch (algoliaErr) {
+      console.error("Failed to sync new property to Algolia:", algoliaErr);
+    }
+
     return NextResponse.json({ success: true, data: property }, { status: 201 });
   } catch (error) {
     return NextResponse.json({ success: false, error: error.message }, { status: 400 });

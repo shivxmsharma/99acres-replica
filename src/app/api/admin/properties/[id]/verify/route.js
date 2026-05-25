@@ -24,6 +24,14 @@ export async function POST(req, { params }) {
       return NextResponse.json({ success: false, message: "Property not found" }, { status: 404 });
     }
 
+    // Update Algolia index status
+    try {
+      const { syncPropertiesToAlgolia } = await import("@/lib/algolia");
+      await syncPropertiesToAlgolia(property);
+    } catch (algoliaErr) {
+      console.error("Failed to sync verified property to Algolia:", algoliaErr);
+    }
+
     return NextResponse.json({ success: true, data: property });
   } catch (error) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });

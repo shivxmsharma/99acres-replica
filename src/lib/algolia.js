@@ -1,4 +1,4 @@
-import algoliasearch from "algoliasearch";
+import { algoliasearch } from "algoliasearch";
 
 const getAdminClient = () =>
   algoliasearch(
@@ -6,12 +6,11 @@ const getAdminClient = () =>
     process.env.ALGOLIA_ADMIN_KEY
   );
 
-export const getPropertiesIndex = () =>
-  getAdminClient().initIndex('99acres_properties');
+const INDEX_NAME = '99acres_properties';
 
 export const syncPropertiesToAlgolia = async (property) => {
   try {
-    const index = getPropertiesIndex();
+    const client = getAdminClient();
     const locality = property.address?.locality || '';
     const city = property.address?.city || '';
     const beds = property.details?.bedrooms;
@@ -23,14 +22,17 @@ export const syncPropertiesToAlgolia = async (property) => {
         `${beds ? beds + ' BHK ' : ''}${property.propertyType} in ${locality}, ${city}`,
       listingType: property.listingType,
       propertyType: property.propertyType,
+      type: property.propertyType,
       price: property.price || 0,
       city,
       locality,
+      area: property.address?.locality || '',
+      bhk: property.details?.bedrooms || 0,
+      sqft: property.details?.area || 0,
       state: property.address?.state || '',
       street: property.address?.street || '',
       bedrooms: property.details?.bedrooms || 0,
       bathrooms: property.details?.bathrooms || 0,
-      area: property.details?.area || 0,
       furnishing: property.details?.furnishing || '',
       constructionStatus: property.details?.constructionStatus || '',
       isReraVerified: property.isReraVerified || false,
@@ -52,7 +54,10 @@ export const syncPropertiesToAlgolia = async (property) => {
       };
     }
 
-    await index.saveObject(record);
+    await client.saveObject({
+      indexName: INDEX_NAME,
+      body: record
+    });
   } catch (err) {
     console.error('[Algolia] Sync error:', err.message);
   }
@@ -60,8 +65,11 @@ export const syncPropertiesToAlgolia = async (property) => {
 
 export const deletePropertyFromAlgolia = async (id) => {
   try {
-    const index = getPropertiesIndex();
-    await index.deleteObject(id.toString());
+    const client = getAdminClient();
+    await client.deleteObject({
+      indexName: INDEX_NAME,
+      objectID: id.toString()
+    });
   } catch (err) {
     console.error('[Algolia] Delete error:', err.message);
   }

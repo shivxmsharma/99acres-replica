@@ -42,6 +42,9 @@ export default function QuickViewModal({ property, isOpen, onClose }) {
           <div className="md:w-1/2 relative bg-gray-100 overflow-hidden group">
             <img 
               src={property.images?.[0] || "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=1000"} 
+              onError={(e) => {
+                e.target.src = "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=1000";
+              }}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
               alt={property.title}
             />
@@ -133,9 +136,13 @@ export default function QuickViewModal({ property, isOpen, onClose }) {
               >
                 View Full Details
               </Link>
-              <button className="px-6 bg-white border border-gray-200 text-gray-900 rounded-2xl font-black text-xs uppercase tracking-widest hover:border-primary hover:text-primary transition-all flex items-center gap-2">
+              <a 
+                href={`tel:${property.owner?.contact || property.ownerContact || "+91 9876543210"}`}
+                className="px-6 bg-white border border-gray-200 text-gray-900 rounded-2xl font-black text-xs uppercase tracking-widest hover:border-primary hover:text-primary transition-all flex items-center gap-2"
+                title="Call Seller"
+              >
                 <Phone size={18} />
-              </button>
+              </a>
             </div>
           </div>
         </motion.div>

@@ -115,7 +115,14 @@ export default function PropertyReviews({ propertyId }) {
             <div key={review._id} className="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm flex gap-6">
               <div className="w-12 h-12 bg-blue-50 text-[#0041C2] rounded-2xl flex items-center justify-center shrink-0">
                 {review.userId?.image ? (
-                  <img src={review.userId.image} className="w-full h-full object-cover rounded-2xl" alt="" />
+                  <img 
+                    src={review.userId.image} 
+                    onError={(e) => {
+                      e.target.src = "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=100";
+                    }}
+                    className="w-full h-full object-cover rounded-2xl" 
+                    alt="" 
+                  />
                 ) : (
                   <User size={24} />
                 )}
