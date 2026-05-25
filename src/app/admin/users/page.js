@@ -18,6 +18,9 @@ export default function AdminUsers() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [userConfirmOpen, setUserConfirmOpen] = useState(false);
+  const [userToUpdate, setUserToUpdate] = useState(null);
+  const [targetRole, setTargetRole] = useState("");
 
   useEffect(() => {
     fetchUsers();
@@ -35,13 +38,19 @@ export default function AdminUsers() {
     setLoading(false);
   };
 
-  const handleRoleChange = async (id, newRole) => {
-    if (!confirm(`Are you sure you want to change this user's role to ${newRole}?`)) return;
+  const handleRoleChangeClick = (user, newRole) => {
+    setUserToUpdate(user);
+    setTargetRole(newRole);
+    setUserConfirmOpen(true);
+  };
+
+  const executeRoleChange = async () => {
+    if (!userToUpdate || !targetRole) return;
     try {
-      const res = await fetch(`/api/admin/users/${id}/role`, {
+      const res = await fetch(`/api/admin/users/${userToUpdate._id}/role`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ role: newRole })
+        body: JSON.stringify({ role: targetRole })
       });
       if (res.ok) fetchUsers();
     } catch (err) {
@@ -136,7 +145,7 @@ export default function AdminUsers() {
                       <div className="flex items-center justify-end gap-2">
                         {user.role !== 'Agent' && (
                           <button 
-                            onClick={() => handleRoleChange(user._id, 'Agent')}
+                            onClick={() => handleRoleChangeClick(user, 'Agent')}
                             className="px-4 py-2 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all"
                           >
                             Make Agent
@@ -144,7 +153,7 @@ export default function AdminUsers() {
                         )}
                         {user.role !== 'Admin' && (
                           <button 
-                            onClick={() => handleRoleChange(user._id, 'Admin')}
+                            onClick={() => handleRoleChangeClick(user, 'Admin')}
                             className="px-4 py-2 bg-red-50 text-red-600 hover:bg-red-600 hover:text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all"
                           >
                             Make Admin
@@ -152,7 +161,7 @@ export default function AdminUsers() {
                         )}
                         {user.role !== 'Buyer' && (
                           <button 
-                            onClick={() => handleRoleChange(user._id, 'Buyer')}
+                            onClick={() => handleRoleChangeClick(user, 'Buyer')}
                             className="p-2.5 bg-gray-50 text-gray-400 hover:bg-gray-900 hover:text-white rounded-xl transition-all"
                             title="Demote to Buyer"
                           >
@@ -168,6 +177,51 @@ export default function AdminUsers() {
           </div>
         )}
       </div>
+
+      {/* Premium Confirm User Role Modal */}
+      {userConfirmOpen && userToUpdate && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div 
+            className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"
+            onClick={() => {
+              setUserConfirmOpen(false);
+              setUserToUpdate(null);
+            }}
+          />
+          <div className="relative bg-white rounded-[32px] max-w-md w-full p-8 border border-gray-100 shadow-2xl z-10 animate-in zoom-in-95 duration-200">
+            <div className="flex flex-col items-center text-center">
+              <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-6">
+                <User size={28} />
+              </div>
+              <h3 className="text-xl font-black text-gray-900 tracking-tight mb-2 uppercase">Update User Access</h3>
+              <p className="text-gray-500 text-sm font-medium mb-6">
+                Are you sure you want to change <span className="font-bold text-gray-900">{userToUpdate.name}</span>'s role to <span className="font-bold text-primary uppercase">{targetRole}</span>?
+              </p>
+              <div className="flex gap-3 w-full">
+                <button
+                  onClick={() => {
+                    setUserConfirmOpen(false);
+                    setUserToUpdate(null);
+                  }}
+                  className="flex-1 py-3.5 bg-gray-50 hover:bg-gray-100 rounded-2xl text-xs font-black uppercase tracking-widest text-gray-500 transition-all font-bold"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={async () => {
+                    await executeRoleChange();
+                    setUserConfirmOpen(false);
+                    setUserToUpdate(null);
+                  }}
+                  className="flex-1 py-3.5 bg-primary hover:bg-blue-600 active:scale-[0.98] rounded-2xl text-xs font-black uppercase tracking-widest text-white transition-all shadow-lg shadow-blue-500/20 font-bold"
+                >
+                  Confirm
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

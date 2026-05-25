@@ -16,9 +16,9 @@ export async function GET() {
     await dbConnect();
 
     const stats = {
-      totalProperties: await Property.countDocuments(),
-      verifiedProperties: await Property.countDocuments({ isVerified: true }),
-      pendingProperties: await Property.countDocuments({ isVerified: false }),
+      totalProperties: await Property.countDocuments({ status: { $ne: "deleted" } }),
+      verifiedProperties: await Property.countDocuments({ isVerified: true, status: { $ne: "deleted" } }),
+      pendingProperties: await Property.countDocuments({ isVerified: false, status: { $ne: "deleted" } }),
       totalUsers: await User.countDocuments(),
       totalAgents: await User.countDocuments({ role: "Agent" }),
       activeLeads: 124, // Mock for now until Leads model is ready
@@ -26,7 +26,7 @@ export async function GET() {
     };
 
     // Get recent properties
-    const recentProperties = await Property.find()
+    const recentProperties = await Property.find({ status: { $ne: "deleted" } })
       .sort({ createdAt: -1 })
       .limit(5)
       .populate("owner", "name email");

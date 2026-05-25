@@ -47,6 +47,10 @@ export default function DashboardPage() {
   const [responseMsg, setResponseMsg] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Custom Delete Modal State
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [propertyToDelete, setPropertyToDelete] = useState(null);
+
   useEffect(() => {
     fetchDashboardData();
   }, []);
@@ -139,9 +143,12 @@ export default function DashboardPage() {
     }
   };
 
-  const handleDelete = async (propertyId) => {
-    if (!window.confirm("Are you sure you want to delete this listing? This action cannot be undone.")) return;
-    
+  const handleDeleteClick = (property) => {
+    setPropertyToDelete(property);
+    setDeleteConfirmOpen(true);
+  };
+
+  const executeDelete = async (propertyId) => {
     try {
       const res = await fetch(`/api/properties/${propertyId}`, {
         method: "DELETE",
@@ -156,6 +163,31 @@ export default function DashboardPage() {
       }
     } catch (error) {
       toast.error(error.message || "Failed to delete listing");
+    }
+  };
+
+  const handleStatusToggle = async (propertyId, currentStatus, listingType) => {
+    let nextStatus = "active";
+    if (currentStatus === "active") {
+      nextStatus = listingType?.toLowerCase() === "rent" ? "rented" : "sold";
+    }
+    
+    try {
+      const res = await fetch(`/api/properties/${propertyId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: nextStatus })
+      });
+      
+      const data = await res.json();
+      if (data.success) {
+        toast.success(`Listing marked as ${nextStatus}!`);
+        setListings(listings.map(p => p._id === propertyId ? { ...p, status: nextStatus } : p));
+      } else {
+        throw new Error(data.error);
+      }
+    } catch (error) {
+      toast.error(error.message || "Failed to update listing status");
     }
   };
 
@@ -343,7 +375,7 @@ export default function DashboardPage() {
                           </div>
                           
                            <div className="mt-auto pt-4 border-t border-gray-50 flex items-center justify-between">
-                            <div className="flex gap-2">
+                            <div className="flex items-center gap-2">
                               {property.isFeatured ? (
                                 <span className="px-3 py-1 bg-amber-50 text-amber-600 rounded-lg text-[8px] font-black uppercase tracking-widest border border-amber-100 flex items-center gap-1">
                                   <Sparkles size={10} /> Boosted
@@ -356,6 +388,25 @@ export default function DashboardPage() {
                                   <TrendingUp size={10} /> Boost Listing
                                 </button>
                               )}
+
+                              {/* Sold/Rented Toggle */}
+                              {property.status === "sold" || property.status === "rented" ? (
+                                <button
+                                  onClick={() => handleStatusToggle(property._id, property.status, property.listingType)}
+                                  className="px-3 py-1 bg-green-50 text-green-600 rounded-lg text-[8px] font-black uppercase tracking-widest border border-green-100 flex items-center gap-1 hover:bg-green-600 hover:text-white transition-all font-bold"
+                                  title="Click to mark as Active"
+                                >
+                                  <CheckCircle2 size={10} /> {property.status === "sold" ? "Sold" : "Rented"}
+                                </button>
+                              ) : (
+                                <button
+                                  onClick={() => handleStatusToggle(property._id, property.status, property.listingType)}
+                                  className="px-3 py-1 bg-gray-100 text-gray-600 hover:bg-gray-200 rounded-lg text-[8px] font-black uppercase tracking-widest transition-all flex items-center gap-1 font-bold"
+                                >
+                                  {property.listingType?.toLowerCase() === "rent" ? "Mark Rented" : "Mark Sold"}
+                                </button>
+                              )}
+
                               <Link 
                                 href={`/dashboard/edit/${property._id}`}
                                 className="p-2 text-gray-400 hover:text-primary hover:bg-blue-50 rounded-xl transition-all"
@@ -363,7 +414,7 @@ export default function DashboardPage() {
                                 <Edit3 size={18} />
                               </Link>
                               <button 
-                                onClick={() => handleDelete(property._id)}
+                                onClick={() => handleDeleteClick(property)}
                                 className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
                               >
                                 <Trash2 size={18} />
@@ -561,6 +612,63 @@ export default function DashboardPage() {
                     >
                       {isSubmitting ? <Loader2 size={20} className="animate-spin" /> : <Send size={20} />}
                       {isSubmitting ? "Sending..." : "Send Response"}
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+
+        {/* Custom Delete Confirmation Modal */}
+        <AnimatePresence>
+          {deleteConfirmOpen && propertyToDelete && (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => {
+                  setDeleteConfirmOpen(false);
+                  setPropertyToDelete(null);
+                }}
+                className="absolute inset-0 bg-gray-900/40 backdrop-blur-sm"
+              />
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                className="relative bg-white w-full max-w-md rounded-[40px] shadow-2xl overflow-hidden z-10"
+              >
+                <div className="p-10 flex flex-col items-center text-center">
+                  <div className="w-20 h-20 bg-red-50 text-red-500 rounded-3xl flex items-center justify-center mb-8">
+                    <Trash2 size={36} />
+                  </div>
+                  
+                  <h2 className="text-3xl font-black text-gray-900 tracking-tight mb-3 uppercase">Delete Listing</h2>
+                  <p className="text-gray-500 text-sm font-medium leading-relaxed mb-8">
+                    Are you sure you want to delete <span className="font-bold text-gray-900">"{propertyToDelete.title}"</span>? This action cannot be undone.
+                  </p>
+                  
+                  <div className="flex gap-4 w-full">
+                    <button
+                      onClick={() => {
+                        setDeleteConfirmOpen(false);
+                        setPropertyToDelete(null);
+                      }}
+                      className="flex-1 py-3.5 bg-gray-50 hover:bg-gray-100 active:scale-[0.98] rounded-2xl text-xs font-black uppercase tracking-widest text-gray-500 transition-all font-bold"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={async () => {
+                        await executeDelete(propertyToDelete._id);
+                        setDeleteConfirmOpen(false);
+                        setPropertyToDelete(null);
+                      }}
+                      className="flex-1 py-3.5 bg-red-500 hover:bg-red-600 active:scale-[0.98] rounded-2xl text-xs font-black uppercase tracking-widest text-white transition-all shadow-lg shadow-red-500/20 font-bold"
+                    >
+                      Confirm Delete
                     </button>
                   </div>
                 </div>

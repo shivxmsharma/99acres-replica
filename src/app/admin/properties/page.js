@@ -22,6 +22,8 @@ export default function AdminProperties() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("all"); // all, pending, verified
   const [search, setSearch] = useState("");
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [propertyToDelete, setPropertyToDelete] = useState(null);
 
   useEffect(() => {
     fetchProperties();
@@ -48,8 +50,12 @@ export default function AdminProperties() {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!confirm("Are you sure you want to delete this property?")) return;
+  const handleDeleteClick = (prop) => {
+    setPropertyToDelete(prop);
+    setDeleteConfirmOpen(true);
+  };
+
+  const executeDelete = async (id) => {
     try {
       const res = await fetch(`/api/admin/properties/${id}`, { method: "DELETE" });
       if (res.ok) fetchProperties();
@@ -190,7 +196,7 @@ export default function AdminProperties() {
                           <ExternalLink size={18} />
                         </Link>
                         <button 
-                          onClick={() => handleDelete(prop._id)}
+                          onClick={() => handleDeleteClick(prop)}
                           className="p-2.5 bg-red-50 text-red-600 hover:bg-red-600 hover:text-white rounded-xl transition-all shadow-sm"
                           title="Delete Listing"
                         >
@@ -205,6 +211,51 @@ export default function AdminProperties() {
           </div>
         )}
       </div>
+
+      {/* Premium Confirm Delete Modal */}
+      {deleteConfirmOpen && propertyToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div 
+            className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"
+            onClick={() => {
+              setDeleteConfirmOpen(false);
+              setPropertyToDelete(null);
+            }}
+          />
+          <div className="relative bg-white rounded-[32px] max-w-md w-full p-8 border border-gray-100 shadow-2xl z-10 animate-in zoom-in-95 duration-200">
+            <div className="flex flex-col items-center text-center">
+              <div className="w-16 h-16 bg-red-50 text-red-500 rounded-2xl flex items-center justify-center mb-6 animate-pulse">
+                <Trash2 size={28} />
+              </div>
+              <h3 className="text-xl font-black text-gray-900 tracking-tight mb-2 uppercase">Delete Listing</h3>
+              <p className="text-gray-500 text-sm font-medium mb-6">
+                Are you sure you want to delete <span className="font-bold text-gray-900">"{propertyToDelete.title}"</span>? This action cannot be undone.
+              </p>
+              <div className="flex gap-3 w-full">
+                <button
+                  onClick={() => {
+                    setDeleteConfirmOpen(false);
+                    setPropertyToDelete(null);
+                  }}
+                  className="flex-1 py-3.5 bg-gray-50 hover:bg-gray-100 rounded-2xl text-xs font-black uppercase tracking-widest text-gray-500 transition-all font-bold"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={async () => {
+                    await executeDelete(propertyToDelete._id);
+                    setDeleteConfirmOpen(false);
+                    setPropertyToDelete(null);
+                  }}
+                  className="flex-1 py-3.5 bg-red-500 hover:bg-red-600 active:scale-[0.98] rounded-2xl text-xs font-black uppercase tracking-widest text-white transition-all shadow-lg shadow-red-500/20 font-bold"
+                >
+                  Confirm Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
